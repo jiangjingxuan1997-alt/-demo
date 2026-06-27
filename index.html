@@ -1,0 +1,1597 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>格致问题捕手 · Question Catcher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* ========================================================
+     1 · BRAND COLORS
+     ======================================================== */
+  --brand-abyss:      #050B1F;   /* deepest background       */
+  --brand-deep:       #0A1A3F;   /* primary background blue  */
+  --brand-ocean:      #12305E;   /* mid background blue      */
+  --brand-tide:       #1E4D8C;   /* raised surfaces          */
+
+  --brand-cyan:       #38BDF8;   /* primary accent (electric)*/
+  --brand-cyan-hi:    #7DD8FB;   /* hover / lighter accent   */
+  --brand-azure:      #3B82F6;   /* secondary accent / links */
+  --brand-glow:       #22D3EE;   /* glow / focus halo        */
+
+  /* ========================================================
+     2 · GRADIENTS & BACKDROPS
+     ======================================================== */
+  --bg-immersive:
+     radial-gradient(120% 90% at 15% -10%, #173a72 0%, transparent 55%),
+     radial-gradient(110% 80% at 95% 110%, #0c3a66 0%, transparent 50%),
+     linear-gradient(168deg, #0A1A3F 0%, #07132E 55%, #050B1F 100%);
+  --bg-accent-bloom:
+     radial-gradient(60% 60% at 50% 0%, rgba(56,189,248,0.22) 0%, transparent 70%);
+  --accent-grad:    linear-gradient(135deg, #38BDF8 0%, #3B82F6 100%); /* @kind color */
+  --accent-grad-soft: linear-gradient(135deg, rgba(56,189,248,0.18) 0%, rgba(59,130,246,0.10) 100%); /* @kind color */
+
+  /* ========================================================
+     3 · GLASS SURFACES  (use WITH backdrop-filter: blur)
+     ======================================================== */
+  --glass-fill:        rgba(255,255,255,0.07);   /* base panel        */
+  --glass-fill-strong: rgba(255,255,255,0.12);   /* raised / hover    */
+  --glass-fill-soft:   rgba(255,255,255,0.04);   /* subtle inset      */
+  --glass-tint:        rgba(56,189,248,0.08);    /* accent-tinted glass*/
+  --glass-border:      rgba(255,255,255,0.16);   /* hairline edge     */
+  --glass-border-hi:   rgba(255,255,255,0.32);   /* lit top edge      */
+  --glass-blur:        22px;                      /* backdrop blur     */
+  --glass-blur-heavy:  40px;
+
+  /* Specular highlight gradient laid over a glass panel's top edge */
+  --glass-specular:
+     linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 42%); /* @kind color */
+
+  /* ========================================================
+     4 · TEXT  (light on dark)
+     ======================================================== */
+  --fg1: #F4F8FF;                       /* primary text         */
+  --fg2: rgba(226,238,255,0.72);        /* secondary text       */
+  --fg3: rgba(198,217,247,0.52);        /* tertiary / captions  */
+  --fg-muted: rgba(180,202,238,0.38);   /* disabled / hint      */
+  --fg-accent: #7DD8FB;                 /* accent text / links  */
+  --fg-on-accent: #061226;              /* text on cyan buttons */
+
+  /* ========================================================
+     5 · SEMANTIC / STATUS
+     ======================================================== */
+  --ok:    #34D399;
+  --warn:  #FBBF24;
+  --err:   #FB7185;
+  --info:  var(--brand-cyan);
+
+  /* ========================================================
+     6 · RADII
+     ======================================================== */
+  --r-xs: 8px;
+  --r-sm: 12px;
+  --r-md: 18px;
+  --r-lg: 26px;
+  --r-xl: 34px;
+  --r-pill: 999px;
+
+  /* ========================================================
+     7 · SHADOWS & GLOW
+     ------------------------------------------------------
+     Glass uses soft ambient drop shadows + an inner top
+     highlight (inset) to read as a lit translucent slab.
+     ======================================================== */
+  --shadow-glass:
+     0 1px 0 0 rgba(255,255,255,0.10) inset,
+     0 8px 32px -8px rgba(3,10,28,0.55),
+     0 2px 8px -4px rgba(3,10,28,0.40);
+  --shadow-raised:
+     0 1px 0 0 rgba(255,255,255,0.14) inset,
+     0 18px 50px -12px rgba(2,8,24,0.70);
+  --shadow-float:
+     0 30px 80px -20px rgba(2,8,24,0.80),
+     0 2px 0 0 rgba(255,255,255,0.10) inset;
+  --glow-cyan:    0 0 0 1px rgba(56,189,248,0.40), 0 0 28px -2px rgba(56,189,248,0.55);
+  --glow-focus:   0 0 0 3px rgba(56,189,248,0.30), 0 0 24px -4px rgba(34,211,238,0.50);
+
+  /* ========================================================
+     8 · SPACING SCALE  (4px base)
+     ======================================================== */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --sp-9: 96px;
+
+  /* ========================================================
+     9 · TYPE FAMILIES
+     ======================================================== */
+  --font-display: 'Space Grotesk', 'Noto Sans SC', system-ui, sans-serif;
+  --font-body:    'Noto Sans SC', 'Space Grotesk', system-ui, sans-serif;
+  --font-mono:    'Space Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  /* ========================================================
+     10 · MOTION
+     ======================================================== */
+  --ease-glass: cubic-bezier(0.22, 1, 0.36, 1); /* @kind other */
+  --ease-snap:  cubic-bezier(0.34, 1.56, 0.64, 1); /* @kind other */
+  --dur-fast: 140ms; /* @kind other */
+  --dur-base: 260ms; /* @kind other */
+  --dur-slow: 520ms; /* @kind other */
+}
+
+/* ============================================================
+   SEMANTIC TYPOGRAPHY
+   Numerals + Latin run in Space Grotesk via the display stack;
+   Chinese falls through to Noto Sans SC automatically.
+   ============================================================ */
+.display-1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(40px, 6vw, 72px);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  color: var(--fg1);
+}
+.display-2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(32px, 4.5vw, 52px);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  color: var(--fg1);
+}
+.h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 34px;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--fg1);
+}
+.h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 26px;
+  line-height: 1.2;
+  color: var(--fg1);
+}
+.h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 1.3;
+  color: var(--fg1);
+}
+.body-lg {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--fg2);
+}
+.body {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--fg2);
+}
+.caption {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--fg3);
+}
+.overline {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.4;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg-accent);
+}
+.label-mono {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  color: var(--fg3);
+}
+
+/* ============================================================
+   REUSABLE GLASS PRIMITIVE
+   Apply .glass to any element to get the liquid-glass slab.
+   ============================================================ */
+.glass {
+  position: relative;
+  background: var(--glass-fill);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-glass);
+}
+/* specular top-edge highlight */
+.glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--glass-specular);
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.7;
+}
+</style>
+<style>
+/* kit.css — layout & component styles for the Question Catcher UI kit.
+   Tokens come from colors_and_type.css; this file is pure layout. */
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body {
+  font-family: var(--font-body);
+  color: var(--fg1);
+  background: var(--brand-deep);
+  overflow-x: hidden;
+}
+#root { min-height: 100vh; }
+
+/* ---------- Background ---------- */
+.qc-bg {
+  position: fixed; inset: 0; z-index: 0;
+  overflow: hidden;
+  /* Slowly flowing blue gradient. Brighter teal/cyan bands so the
+     motion is actually visible, but a long loop keeps it calm. */
+  background:
+    linear-gradient(122deg, #04132e 0%, #0A1A3F 16%, #14457a 34%, #0d6a93 50%, #16487a 66%, #0A1A3F 84%, #04132e 100%);
+  background-size: 360% 360%;
+  background-position: 0% 50%;
+  animation: qc-bg-flow 30s ease-in-out infinite;
+}
+@keyframes qc-bg-flow {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .qc-bg { animation: none; }
+}
+.qc-bloom {
+  position: absolute; border-radius: 50%;
+  filter: blur(70px); opacity: 0.72;
+  animation: qc-drift 26s var(--ease-glass) infinite alternate;
+}
+.qc-bloom-a { width: 560px; height: 560px; left: -8%; top: -14%;
+  background: radial-gradient(circle, rgba(56,189,248,0.5), transparent 68%); }
+.qc-bloom-b { width: 640px; height: 640px; right: -12%; bottom: -18%;
+  background: radial-gradient(circle, rgba(59,130,246,0.46), transparent 68%); animation-delay: -9s; }
+.qc-bloom-c { width: 460px; height: 460px; left: 42%; top: 26%;
+  background: radial-gradient(circle, rgba(34,211,238,0.34), transparent 68%); animation-delay: -16s; }
+@keyframes qc-drift {
+  from { transform: translate(0,0) scale(1); }
+  to   { transform: translate(160px,-110px) scale(1.3); }
+}
+.qc-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(120% 90% at 50% 25%, #000 0%, transparent 75%);
+  -webkit-mask-image: radial-gradient(120% 90% at 50% 25%, #000 0%, transparent 75%);
+}
+
+/* ---------- App shell ---------- */
+.qc-app { position: relative; z-index: 1; min-height: 100vh;
+  display: flex; flex-direction: column; }
+
+/* ---------- Header ---------- */
+.qc-header {
+  position: sticky; top: 16px; z-index: 5;
+  margin: 16px 24px 0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 20px; border-radius: var(--r-pill);
+}
+.qc-brand { display: flex; align-items: center; gap: 12px; }
+.qc-mark {
+  width: 38px; height: 38px; display: grid; place-items: center;
+  background: var(--glass-tint); border: 1px solid rgba(56,189,248,0.4);
+  border-radius: 11px; box-shadow: var(--glow-cyan);
+}
+.qc-wordmark { font-family: var(--font-display); font-weight: 700; font-size: 20px;
+  letter-spacing: -0.01em; }
+.qc-wordmark .qc-accent { color: var(--brand-cyan); }
+.qc-sub { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.18em;
+  color: var(--fg3); margin-left: 4px; }
+.qc-status { display: flex; align-items: center; gap: 8px; }
+.qc-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok);
+  box-shadow: 0 0 10px var(--ok); animation: qc-pulse 2.4s ease-in-out infinite; }
+@keyframes qc-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* ---------- Hero / center stage ---------- */
+.qc-stage {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 48px 24px 80px;
+  transition: justify-content var(--dur-slow) var(--ease-glass);
+}
+.qc-stage.has-answer { justify-content: flex-start; padding-top: 40px; }
+.qc-hero { width: 100%; max-width: 760px; text-align: center;
+  animation: qc-rise var(--dur-slow) var(--ease-glass) both; }
+.qc-eyebrow { display: inline-flex; align-items: center; gap: 8px;
+  padding: 7px 14px; border-radius: var(--r-pill);
+  background: var(--glass-fill); border: 1px solid var(--glass-border);
+  -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  margin-bottom: 22px; }
+.qc-eyebrow .label-mono { color: var(--fg-accent); }
+.qc-title { font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(38px, 6vw, 62px); line-height: 1.06; letter-spacing: -0.02em;
+  margin: 0 0 12px; }
+.qc-title .qc-accent { color: var(--brand-cyan); }
+.qc-tagline { font-size: 18px; color: var(--fg2); margin: 0 0 34px; }
+
+/* ---------- Ask window ---------- */
+.qc-ask {
+  width: 100%; max-width: 760px; display: flex; align-items: center; gap: 14px;
+  padding: 16px 16px 16px 22px; border-radius: var(--r-xl); cursor: text;
+  transition: box-shadow var(--dur-base) var(--ease-glass),
+              border-color var(--dur-base) var(--ease-glass),
+              transform var(--dur-base) var(--ease-glass);
+}
+.qc-ask.is-focused { border-color: rgba(56,189,248,0.5); box-shadow: var(--glow-focus); }
+.qc-ask-dot { width: 9px; height: 9px; border-radius: 50%; flex: none;
+  background: var(--brand-cyan); box-shadow: 0 0 12px var(--brand-cyan); }
+.qc-ask-input { flex: 1; background: transparent; border: none; outline: none;
+  font-family: var(--font-body); font-size: 18px; color: var(--fg1); }
+.qc-ask-input::placeholder { color: var(--fg-muted); }
+.qc-ask-btn {
+  flex: none; display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-body); font-size: 15px; font-weight: 600;
+  color: var(--fg-on-accent); background: var(--accent-grad); border: none;
+  padding: 12px 22px; border-radius: var(--r-pill); cursor: pointer;
+  box-shadow: var(--glow-cyan); transition: transform var(--dur-fast) var(--ease-snap), filter var(--dur-fast); }
+.qc-ask-btn:hover:not(:disabled) { filter: brightness(1.08); }
+.qc-ask-btn:active:not(:disabled) { transform: scale(0.96); }
+.qc-ask-btn:disabled { opacity: 0.45; cursor: default; box-shadow: none; }
+.qc-ask-btn [data-lucide="loader"] { animation: qc-spin 0.9s linear infinite; }
+@keyframes qc-spin { to { transform: rotate(360deg); } }
+
+/* ---------- Preset chips (floating, tiered by depth) ---------- */
+.qc-float { width: 100%; max-width: 860px; margin-top: 26px;
+  display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.qc-presets-label { display: flex; align-items: center; gap: 7px;
+  justify-content: center; }
+.qc-float-rows { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; }
+.qc-float-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+  transition: filter var(--dur-base) var(--ease-glass), opacity var(--dur-base) var(--ease-glass); }
+/* depth: nearer the search box = sharp, farther = blurred & faded */
+.qc-float-row[data-depth="0"] { filter: none; opacity: 1; }
+.qc-float-row[data-depth="1"] { filter: blur(1.3px); opacity: 0.74; }
+.qc-float-row[data-depth="2"] { filter: blur(3.4px); opacity: 0.5; }
+.qc-float-row[data-depth="3"] { filter: blur(5.5px); opacity: 0.36; }
+.qc-float-row:hover { filter: none; opacity: 1; }   /* hovering a row brings it into focus */
+
+.qc-fwrap { display: inline-flex; animation: qc-emerge 0.95s var(--ease-glass) both; }
+.qc-fbob  { display: inline-flex; animation: qc-bob 6.5s ease-in-out infinite; }
+@keyframes qc-emerge { from { transform: translateY(40px); } to { transform: translateY(0); } }
+@keyframes qc-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@media (prefers-reduced-motion: reduce) {
+  .qc-fwrap, .qc-fbob { animation: none; }
+}
+
+.qc-chip {
+  font-family: var(--font-body); font-size: 14px; color: var(--fg2);
+  background: var(--glass-fill); border: 1px solid var(--glass-border);
+  -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  padding: 10px 16px; border-radius: var(--r-pill); cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: color var(--dur-fast) var(--ease-glass),
+              background var(--dur-fast) var(--ease-glass),
+              border-color var(--dur-fast) var(--ease-glass),
+              transform var(--dur-fast) var(--ease-glass); }
+.qc-chip:hover { color: var(--fg1); background: var(--glass-fill-strong);
+  border-color: var(--glass-border-hi); transform: translateY(-2px); }
+.qc-chip-accent { color: var(--fg-accent); background: var(--glass-tint);
+  border-color: rgba(56,189,248,0.32); }
+.qc-chip-accent:hover { box-shadow: var(--glow-cyan); color: var(--fg1); }
+
+/* 换一批 button */
+.qc-shuffle { margin-top: 4px; display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-body); font-size: 13.5px; font-weight: 500; color: var(--fg-accent);
+  background: var(--glass-fill); border: 1px solid var(--glass-border);
+  -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  padding: 9px 18px; border-radius: var(--r-pill); cursor: pointer;
+  transition: all var(--dur-fast) var(--ease-glass); }
+.qc-shuffle:hover { color: var(--fg1); border-color: rgba(56,189,248,0.4);
+  box-shadow: var(--glow-cyan); }
+.qc-shuffle:active { transform: scale(0.97); }
+.qc-shuffle:active [data-lucide="shuffle"] { transform: rotate(-20deg); }
+.qc-shuffle [data-lucide="shuffle"] { transition: transform var(--dur-base) var(--ease-snap); }
+
+/* ---------- Loading ---------- */
+.qc-loading { width: 100%; max-width: 760px; margin-top: 28px;
+  display: flex; align-items: center; gap: 14px; padding: 20px 24px;
+  animation: qc-rise var(--dur-base) var(--ease-glass) both; }
+.qc-loading .qc-bars { display: flex; gap: 5px; align-items: flex-end; height: 22px; }
+.qc-loading .qc-bars span { width: 4px; border-radius: 2px; background: var(--brand-cyan);
+  animation: qc-eq 1s ease-in-out infinite; }
+.qc-loading .qc-bars span:nth-child(2){ animation-delay: .15s; }
+.qc-loading .qc-bars span:nth-child(3){ animation-delay: .3s; }
+.qc-loading .qc-bars span:nth-child(4){ animation-delay: .45s; }
+@keyframes qc-eq { 0%,100%{ height: 7px; } 50%{ height: 22px; } }
+.qc-loading-text { color: var(--fg2); font-size: 15px; }
+
+/* ---------- Answer ---------- */
+.qc-answer { width: 100%; max-width: 820px; margin-top: 30px; padding: 28px 30px 30px;
+  animation: qc-rise var(--dur-slow) var(--ease-glass) both; }
+.qc-ans-head { display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 16px; padding-bottom: 22px; border-bottom: 1px solid var(--glass-border); }
+.qc-ans-q { display: flex; gap: 12px; align-items: flex-start; }
+.qc-ans-qmark { width: 34px; height: 34px; flex: none; display: grid; place-items: center;
+  background: var(--glass-tint); border: 1px solid rgba(56,189,248,0.4);
+  border-radius: 10px; box-shadow: var(--glow-cyan); }
+.qc-ans-tag { color: var(--fg-accent); margin-bottom: 5px; }
+.qc-ans-question { font-family: var(--font-display); font-weight: 600; font-size: 24px;
+  line-height: 1.25; margin: 0; letter-spacing: -0.01em; }
+.qc-ghost-btn { flex: none; display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--font-body); font-size: 14px; font-weight: 500; color: var(--fg1);
+  background: var(--glass-fill); border: 1px solid var(--glass-border-hi);
+  padding: 10px 16px; border-radius: var(--r-pill); cursor: pointer;
+  transition: all var(--dur-fast); }
+.qc-ghost-btn:hover { background: var(--glass-fill-strong); }
+
+.qc-block { display: flex; gap: 18px; padding-top: 24px;
+  animation: qc-rise var(--dur-base) var(--ease-glass) both; }
+.qc-block-rail { display: flex; flex-direction: column; align-items: center; flex: none; width: 28px; }
+.qc-block-num { font-family: var(--font-mono); font-size: 13px; color: var(--brand-cyan); }
+.qc-block-line { width: 1px; flex: 1; margin-top: 8px;
+  background: linear-gradient(var(--glass-border-hi), transparent); }
+.qc-block-body { flex: 1; padding-bottom: 4px; }
+.qc-block-label { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.qc-summary { font-size: 18px; line-height: 1.6; color: var(--fg1); margin: 0; text-wrap: pretty; }
+.qc-points { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+.qc-points li { display: flex; gap: 14px; align-items: flex-start; }
+.qc-point-key { flex: none; min-width: 52px; font-weight: 700; font-size: 14px;
+  color: var(--fg-accent); font-family: var(--font-display); line-height: 1.6; }
+.qc-point-val { color: var(--fg2); font-size: 15px; line-height: 1.55; }
+.qc-detail { color: var(--fg2); font-size: 15px; line-height: 1.7; margin: 0; text-wrap: pretty; }
+.qc-sources { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.qc-source { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px;
+  color: var(--fg3); font-family: var(--font-mono);
+  background: var(--glass-fill-soft); border: 1px solid var(--glass-border);
+  padding: 6px 12px; border-radius: var(--r-pill); }
+.qc-followups { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* transform-only entrance: content is always opacity:1 so it never
+   vanishes in static DOM-clone snapshots (screenshots / PDF / PPTX). */
+@keyframes qc-rise { from { transform: translateY(18px); }
+  to { transform: translateY(0); } }
+
+/* footer note */
+.qc-foot { text-align: center; padding: 28px; color: var(--fg-muted);
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; }
+
+@media (max-width: 680px) {
+  .qc-sub { display: none; }
+  .qc-header { margin: 12px; }
+  .qc-ans-head { flex-direction: column; }
+}
+</style>
+<style>
+/* ============================================================
+   新增样式：输入接口（语音/拍照）· 思考脚手架（导图/文献）· 待机屏保
+   ============================================================ */
+
+/* ---------- 输入栏侧边的语音 / 拍照接口 ---------- */
+.qc-ask-wrap { width: 100%; max-width: 760px; display: flex; flex-direction: column;
+  align-items: stretch; gap: 10px; }
+.qc-ask { width: 100%; max-width: none; }
+.qc-ask.is-listening { border-color: rgba(56,189,248,0.6);
+  box-shadow: 0 0 0 3px rgba(56,189,248,0.22), 0 0 30px -4px rgba(34,211,238,0.55); }
+
+.qc-input-tools { display: flex; align-items: center; gap: 4px; flex: none; }
+.qc-tool {
+  width: 40px; height: 40px; flex: none; display: grid; place-items: center;
+  border-radius: var(--r-pill); cursor: pointer; color: var(--fg2);
+  background: var(--glass-fill-soft); border: 1px solid var(--glass-border);
+  transition: all var(--dur-fast) var(--ease-glass); }
+.qc-tool:hover { color: var(--fg1); background: var(--glass-fill-strong);
+  border-color: rgba(56,189,248,0.5); box-shadow: var(--glow-cyan); transform: translateY(-1px); }
+.qc-tool:active { transform: scale(0.94); }
+.qc-tool.is-on { color: var(--fg-on-accent); background: var(--accent-grad);
+  border-color: transparent; box-shadow: var(--glow-cyan); animation: qc-mic-pulse 1.1s ease-in-out infinite; }
+@keyframes qc-mic-pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(56,189,248,0.55); }
+  50%     { box-shadow: 0 0 0 8px rgba(56,189,248,0); } }
+
+.qc-ask-sep { width: 1px; height: 26px; flex: none; background: var(--glass-border-hi); margin: 0 4px; }
+
+.qc-input-hint { display: flex; align-items: center; gap: 10px; padding: 0 8px;
+  font-family: var(--font-mono); font-size: 12.5px; color: var(--fg-accent);
+  animation: qc-rise var(--dur-base) var(--ease-glass) both; }
+.qc-listen-wave { display: inline-flex; align-items: flex-end; gap: 3px; height: 16px; }
+.qc-listen-wave span { width: 3px; border-radius: 2px; background: var(--brand-cyan);
+  animation: qc-eq 0.9s ease-in-out infinite; }
+.qc-listen-wave span:nth-child(2){ animation-delay: .12s; }
+.qc-listen-wave span:nth-child(3){ animation-delay: .24s; }
+.qc-listen-wave span:nth-child(4){ animation-delay: .36s; }
+.qc-listen-wave span:nth-child(5){ animation-delay: .48s; }
+
+/* ---------- 脚手架提示条 ---------- */
+.qc-scaffold-note { display: flex; align-items: flex-start; gap: 10px; margin-top: 22px;
+  padding: 13px 16px; border-radius: var(--r-md); font-size: 14px; line-height: 1.6;
+  color: var(--fg2); background: var(--glass-tint); border: 1px solid rgba(56,189,248,0.28); }
+.qc-scaffold-note strong { color: var(--brand-cyan-hi); font-weight: 700; }
+
+/* ---------- 思维导图 ---------- */
+.qc-mind { display: flex; align-items: center; gap: 0; padding: 6px 0 2px; flex-wrap: wrap; }
+.qc-mind-core { position: relative; flex: none; margin-right: 36px;
+  display: inline-flex; align-items: center; gap: 9px; max-width: 230px;
+  padding: 12px 16px; border-radius: var(--r-md);
+  background: var(--glass-tint); border: 1px solid rgba(56,189,248,0.42);
+  box-shadow: var(--glow-cyan); }
+.qc-mind-core::after { content: ""; position: absolute; left: 100%; top: 50%;
+  width: 36px; height: 2px; transform: translateY(-1px);
+  background: linear-gradient(90deg, var(--brand-cyan), var(--glass-border-hi)); }
+.qc-mind-core-dot { width: 10px; height: 10px; flex: none; border-radius: 50%;
+  background: var(--brand-cyan); box-shadow: 0 0 12px var(--brand-cyan); }
+.qc-mind-core-text { font-family: var(--font-display); font-weight: 600; font-size: 15px;
+  color: var(--fg1); line-height: 1.3; }
+
+.qc-mind-branches { position: relative; display: flex; flex-direction: column; gap: 12px;
+  border-left: 2px solid var(--glass-border-hi); padding-left: 30px; }
+.qc-mind-branch { position: relative; animation: qc-rise var(--dur-base) var(--ease-glass) both; }
+.qc-mind-link { position: absolute; left: -30px; top: 50%; width: 30px; height: 2px;
+  transform: translateY(-1px); background: var(--glass-border-hi); }
+.qc-mind-node { display: inline-flex; flex-direction: column; gap: 2px; max-width: 460px;
+  padding: 9px 15px; border-radius: var(--r-sm);
+  background: var(--glass-fill); border: 1px solid var(--glass-border);
+  transition: all var(--dur-fast) var(--ease-glass); }
+.qc-mind-branch:hover .qc-mind-node { border-color: rgba(56,189,248,0.42);
+  background: var(--glass-fill-strong); transform: translateX(2px); }
+.qc-mind-key { font-family: var(--font-display); font-weight: 700; font-size: 14.5px;
+  color: var(--fg-accent); }
+.qc-mind-hint { font-size: 13.5px; color: var(--fg2); line-height: 1.5; }
+
+/* ---------- 相关文献 ---------- */
+.qc-refs { display: flex; flex-direction: column; gap: 9px; }
+.qc-ref { display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+  border-radius: var(--r-sm); cursor: pointer;
+  background: var(--glass-fill-soft); border: 1px solid var(--glass-border);
+  transition: all var(--dur-fast) var(--ease-glass); }
+.qc-ref:hover { background: var(--glass-fill-strong); border-color: rgba(56,189,248,0.4);
+  transform: translateX(2px); box-shadow: var(--glow-cyan); }
+.qc-ref-ic { width: 34px; height: 34px; flex: none; display: grid; place-items: center;
+  border-radius: 9px; background: var(--glass-tint); border: 1px solid rgba(56,189,248,0.3); }
+.qc-ref-body { flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.qc-ref-kind { color: var(--fg-accent); letter-spacing: 0.14em; text-transform: uppercase; }
+.qc-ref-title { font-size: 14.5px; color: var(--fg1); line-height: 1.4; }
+.qc-method { margin: 16px 0 0; padding: 13px 15px; border-radius: var(--r-sm);
+  font-size: 14px; line-height: 1.7; color: var(--fg2); text-wrap: pretty;
+  background: var(--glass-fill-soft); border: 1px dashed var(--glass-border-hi); }
+
+.qc-guide-lead { font-size: 14.5px; color: var(--fg2); margin: 0 0 14px; line-height: 1.6; }
+
+/* ============================================================
+   待机屏保 · 对话气泡问题瀑布流
+   ============================================================ */
+.qc-standby { position: relative; z-index: 1; min-height: 100vh; height: 100vh; overflow: hidden; }
+
+/* ---------- 横向漂浮的好问题气泡场（带前后景深） ---------- */
+.qc-field { position: absolute; inset: 0; z-index: 1; overflow: hidden; }
+.qc-lane { position: absolute; left: 0; width: 100%; display: flex; overflow: visible; pointer-events: none; }
+.qc-lane-track { display: flex; align-items: center; gap: 44px; white-space: nowrap;
+  animation-name: qc-drift; animation-timing-function: linear; animation-iteration-count: infinite; will-change: transform; }
+@keyframes qc-drift { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .qc-lane-track { animation: none; } }
+
+.qc-fbub { pointer-events: auto; position: relative; cursor: pointer; flex: none;
+  display: inline-flex; align-items: center; gap: 9px; max-width: 340px; white-space: normal;
+  padding: 12px 18px; border-radius: 22px 22px 22px 6px;
+  font-family: var(--font-body); line-height: 1.35; color: var(--fg1); text-align: left;
+  background: var(--glass-fill); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  border: 1px solid var(--glass-border); box-shadow: var(--shadow-glass);
+  transition: transform var(--dur-fast) var(--ease-snap), box-shadow var(--dur-fast),
+              border-color var(--dur-fast), background var(--dur-fast), filter var(--dur-base), opacity var(--dur-base); }
+.qc-fbub-rank { flex: none; font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+  color: var(--brand-cyan); letter-spacing: 0.04em; padding: 2px 7px; border-radius: 999px;
+  background: var(--glass-tint); border: 1px solid rgba(56,189,248,0.32); }
+.qc-fbub-text { display: inline-block; }
+
+/* 景深层级：最远=最小+最模糊+最淡；最近=最大+最清晰 */
+.qc-depth-0 { transform: scale(0.7); filter: blur(2.4px); opacity: 0.4; font-size: 12.5px; max-width: 240px; }
+.qc-depth-1 { transform: scale(0.88); filter: blur(0.7px); opacity: 0.72; font-size: 14px; max-width: 300px; }
+.qc-depth-2 { filter: none; opacity: 1; font-size: 15.5px; box-shadow: var(--glow-cyan), var(--shadow-glass); }
+.qc-depth-0 .qc-fbub-rank, .qc-depth-1 .qc-fbub-rank { display: none; }
+.qc-fbub:hover { transform: scale(1.06); filter: none; opacity: 1; color: var(--fg1);
+  border-color: rgba(56,189,248,0.6); background: var(--glass-fill-strong);
+  box-shadow: var(--glow-cyan), var(--shadow-raised); z-index: 20; }
+.qc-fbub.is-active { border-color: rgba(56,189,248,0.7);
+  box-shadow: 0 0 0 2px rgba(56,189,248,0.4), var(--glow-cyan); opacity: 1; filter: none; }
+
+/* 焦点遮罩：聚焦中心舞台与底部标题带 */
+.qc-field-veil { position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background:
+    radial-gradient(46% 42% at 50% 38%, rgba(5,11,31,0.92) 0%, rgba(5,11,31,0.55) 46%, rgba(5,11,31,0) 78%),
+    linear-gradient(to bottom, rgba(5,11,31,0) 54%, rgba(5,11,31,0.72) 80%, rgba(5,11,31,0.94) 100%); }
+
+/* ---------- 中心：放大显示的好问题（气泡对话框） ---------- */
+.qc-feature-wrap { position: absolute; z-index: 4; left: 50%; top: 37%; transform: translate(-50%,-50%);
+  width: min(680px, 90vw); pointer-events: none; }
+.qc-feature { pointer-events: auto; position: relative; text-align: left;
+  padding: 24px 30px 22px; border-radius: 28px 28px 28px 8px;
+  background: rgba(11,19,44,0.9); -webkit-backdrop-filter: blur(26px); backdrop-filter: blur(26px);
+  border: 1px solid rgba(56,189,248,0.45); box-shadow: var(--glow-cyan), var(--shadow-raised);
+  animation: qc-feat-in 0.5s var(--ease-glass) both; }
+.qc-feature { border-radius: 28px; }
+@keyframes qc-feat-in { from { transform: translateY(14px) scale(0.97); } to { transform: none; } }
+
+.qc-feat-top { display: flex; align-items: center; gap: 10px; margin-bottom: 13px; flex-wrap: wrap; }
+.qc-feat-rank { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono);
+  font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: var(--fg-on-accent);
+  background: var(--accent-grad); padding: 4px 11px; border-radius: 999px; }
+.qc-feat-asker { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--fg2);
+  background: var(--glass-fill-soft); border: 1px solid var(--glass-border); padding: 4px 11px; border-radius: 999px; }
+.qc-feat-asker b { color: var(--fg1); font-weight: 600; }
+.qc-feat-flag { margin-left: auto; display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em; color: var(--fg3); }
+
+.qc-feat-q { font-family: var(--font-display); font-weight: 600; font-size: clamp(18px, 2.1vw, 23px);
+  line-height: 1.42; color: var(--fg1); margin: 0 0 16px; text-wrap: pretty; }
+
+.qc-feat-scaffold { display: flex; flex-direction: column; gap: 10px;
+  padding-top: 15px; border-top: 1px dashed var(--glass-border-hi); }
+.qc-feat-row { display: flex; align-items: flex-start; gap: 12px; font-size: 13.5px; line-height: 1.5; color: var(--fg2); }
+.qc-feat-row .overline { flex: none; width: 56px; color: var(--fg-accent); padding-top: 3px;
+  display: inline-flex; align-items: center; gap: 5px; }
+.qc-feat-keys { display: flex; flex-wrap: wrap; gap: 6px; }
+.qc-feat-key { font-size: 12.5px; color: var(--fg1); background: var(--glass-tint);
+  border: 1px solid rgba(56,189,248,0.28); padding: 3px 10px; border-radius: 999px; }
+.qc-feat-cta { margin-top: 16px; display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-body); font-size: 14.5px; font-weight: 600; color: var(--fg-on-accent);
+  background: var(--accent-grad); border: none; padding: 11px 20px; border-radius: var(--r-pill);
+  cursor: pointer; box-shadow: var(--glow-cyan); transition: transform var(--dur-fast) var(--ease-snap), filter var(--dur-fast); }
+.qc-feat-cta:hover { filter: brightness(1.08); transform: translateY(-2px); }
+
+.qc-feat-dots { display: flex; justify-content: center; flex-wrap: wrap; gap: 7px; margin-top: 16px; pointer-events: auto; }
+.qc-feat-dot { width: 7px; height: 7px; border-radius: 50%; border: none; cursor: pointer; padding: 0;
+  background: var(--glass-border-hi); transition: all var(--dur-fast); }
+.qc-feat-dot:hover { background: var(--fg3); }
+.qc-feat-dot.is-on { width: 22px; border-radius: 4px; background: var(--brand-cyan); }
+
+/* ---------- 中下方标题 ---------- */
+.qc-standby-foot { position: absolute; z-index: 5; left: 50%; bottom: 5vh; transform: translateX(-50%);
+  text-align: center; pointer-events: none; width: min(720px, 92vw); }
+.qc-standby-foot .qc-eyebrow { pointer-events: auto; }
+.qc-standby-title { font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(30px, 4.2vw, 48px); line-height: 1.06; letter-spacing: -0.02em;
+  margin: 10px 0; color: var(--fg1); text-shadow: 0 4px 40px rgba(5,11,31,0.95); }
+.qc-standby-title .qc-accent { color: var(--brand-cyan); }
+.qc-standby-tagline { font-size: 16px; color: var(--fg2); margin: 0 0 18px; text-shadow: 0 2px 20px rgba(5,11,31,0.95); }
+.qc-enter-btn { pointer-events: auto; display: inline-flex; align-items: center; gap: 9px;
+  font-family: var(--font-body); font-size: 15px; font-weight: 600; color: var(--fg-on-accent);
+  background: var(--accent-grad); border: none; padding: 12px 26px; border-radius: var(--r-pill);
+  cursor: pointer; box-shadow: var(--glow-cyan); transition: transform var(--dur-fast) var(--ease-snap), filter var(--dur-fast); }
+.qc-enter-btn:hover { filter: brightness(1.08); transform: translateY(-2px); }
+.qc-enter-btn:active { transform: scale(0.96); }
+
+@media (max-width: 720px) {
+  .qc-feature-wrap { top: 33%; }
+  .qc-feat-q { font-size: 17px; }
+  .qc-feat-row .overline { width: 100%; }
+  .qc-feat-row { flex-wrap: wrap; gap: 4px; }
+}
+
+/* ---------- Header: brand button + standby link ---------- */
+.qc-brand-btn { cursor: pointer; border-radius: var(--r-pill); transition: opacity var(--dur-fast); }
+.qc-brand-btn:hover { opacity: 0.82; }
+.qc-statuspill { display: inline-flex; align-items: center; gap: 8px; }
+.qc-standby-link { display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+  font-family: var(--font-body); font-weight: 500; color: var(--fg2);
+  background: var(--glass-fill-soft); border: 1px solid var(--glass-border);
+  padding: 7px 13px; border-radius: var(--r-pill); transition: all var(--dur-fast) var(--ease-glass); }
+.qc-standby-link:hover { color: var(--fg1); border-color: rgba(56,189,248,0.45); box-shadow: var(--glow-cyan); }
+.qc-standby-link .label-mono { color: inherit; }
+
+@media (max-width: 680px) {
+  .qc-mind-core { margin-right: 0; margin-bottom: 16px; }
+  .qc-mind-core::after { display: none; }
+  .qc-stream { display: none; }
+  .qc-standby-link span { display: none; }
+}
+
+</style>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/jsx-source" id="app-src">
+const { useState, useEffect, useRef, useMemo } = React;
+
+/* ===== data ===== */
+/* AnswerData.jsx — demo content for the pilot.
+   A pool of preset questions, each with a hand-authored structured
+   answer so the leadership demo always returns a polished result.
+   A generic fallback handles free-typed questions.                    */
+
+const ANSWERS = {
+  "光合作用为什么需要叶绿体？": {
+    tag: "高中生物 · 必修一",
+    summary:
+      "叶绿体是光合作用的核心场所，其中的叶绿素负责吸收光能、启动整个反应——没有它，光能就无法转化为植物可用的化学能。",
+    points: [
+      ["捕光", "叶绿素吸收红光与蓝紫光，把光能转为电子的能量。"],
+      ["分工", "类囊体进行光反应产生 ATP 与 NADPH，基质完成暗反应固定 CO₂。"],
+      ["产物", "最终合成有机物（葡萄糖）并释放氧气，供植物生长与呼吸。"],
+    ],
+    detail:
+      "可以把叶绿体理解为一座微型「太阳能工厂」：膜上的色素负责接收阳光，内部的酶系统负责加工原料。两条流水线（光反应、暗反应）紧密衔接，缺少叶绿体这一封闭场所，反应物无法富集、能量也无处储存。",
+    sources: ["人教版 · 生物必修一 · 第5章", "校本拓展 · 叶绿体结构图解"],
+    followups: ["光反应和暗反应有什么区别？", "为什么叶子大多是绿色的？"],
+  },
+  "勾股定理可以怎样证明？": {
+    tag: "初中数学 · 几何",
+    summary:
+      "勾股定理（a² + b² = c²）有数百种证明，最直观的是「面积拼接法」——用同一个大正方形的两种拼法，得到两边平方和等于斜边平方。",
+    points: [
+      ["面积法", "四个全等直角三角形围成大正方形，中间空白面积即 c²。"],
+      ["相似法", "斜边上作高，得到两组相似三角形，比例关系推出结论。"],
+      ["总统证明", "用梯形面积的两种算法，是著名的「加菲尔德证明」。"],
+    ],
+    detail:
+      "面积拼接最适合课堂演示：边长为 (a+b) 的正方形，一种拼法留出两个正方形 a²、b²，另一种拼法留出一个正方形 c²，而四个三角形面积相同，于是 a² + b² = c²。动手剪拼即可「看见」定理成立。",
+    sources: ["人教版 · 数学八年级下 · 第17章", "拓展 · 《几何原本》命题 I.47"],
+    followups: ["勾股定理的逆定理是什么？", "哪些数是勾股数？"],
+  },
+  "什么是「格物致知」？": {
+    tag: "校史 · 校训溯源",
+    summary:
+      "「格物致知」出自《礼记·大学》，意为「探究事物的原理，从而获得知识」。它既是格致中学校名的由来，也是「问题捕手」倡导的求知方式：从一个好问题出发。",
+    points: [
+      ["格物", "走近事物、动手探究，而非死记结论。"],
+      ["致知", "在探究中抵达真知，理解背后的「为什么」。"],
+      ["今释", "在 AI 时代，提出好问题，就是新的「格物」。"],
+    ],
+    detail:
+      "格致中学创校于 1874 年，以「格物致知」立校，强调科学精神与独立思考。「问题捕手」延续这一传统——把提问本身当作学习的起点：当你敢于追问，答案便已成形一半。",
+    sources: ["《礼记 · 大学》", "格致中学 · 校史馆"],
+    followups: ["格致中学的历史有多久？", "怎样才算一个好问题？"],
+  },
+  "细胞为什么会分裂？": {
+    tag: "高中生物 · 必修一",
+    summary:
+      "细胞分裂是为了「生长、修复与繁殖」——单个细胞体积受限，分裂能让生物体长大、更新受损组织，并把遗传信息准确传给下一代。",
+    points: [
+      ["体积限制", "细胞太大时，表面积与体积之比下降，物质交换跟不上。"],
+      ["遗传传递", "有丝分裂保证每个子细胞获得完整、等量的染色体。"],
+      ["更新修复", "皮肤、血液等持续分裂，替换衰老或受损的细胞。"],
+    ],
+    detail:
+      "分裂前，细胞先复制 DNA，再经过前、中、后、末四个时期，把染色体平均分配到两个子细胞中。这一精密过程确保「一变二」之后，信息不丢失、不出错——这正是生命得以延续的基础。",
+    sources: ["人教版 · 生物必修一 · 第6章", "校本拓展 · 有丝分裂动图"],
+    followups: ["有丝分裂和减数分裂有什么不同？", "癌细胞为什么分裂失控？"],
+  },
+  "为什么天空白天是蓝色的？": {
+    tag: "高中物理 · 光学",
+    summary:
+      "阳光进入大气后被空气分子散射，波长较短的蓝光最容易被散射到四面八方，于是我们抬头看到的天空是蓝色的。",
+    points: [
+      ["瑞利散射", "散射强度与波长四次方成反比，蓝紫光散射最强。"],
+      ["白天", "四散的蓝光从各个方向进入眼睛，天空因而显蓝。"],
+      ["傍晚", "阳光斜穿更厚大气，蓝光散尽，剩下红光使天边泛红。"],
+    ],
+    detail:
+      "紫光其实散射更强，但太阳光里紫光偏少、人眼对蓝又更敏感，综合下来天空呈蔚蓝。理解了散射，也就明白了为什么日落时分天空会染上橙红。",
+    sources: ["人教版 · 物理选修 · 光学", "校本拓展 · 瑞利散射"],
+    followups: ["彩虹是怎么形成的？", "为什么云是白色的？"],
+  },
+  "牛顿三大定律分别讲了什么？": {
+    tag: "高中物理 · 力学",
+    summary:
+      "牛顿三定律是经典力学的基石：物体不受力会保持原状（惯性）、合力等于质量乘加速度（F=ma）、力总是成对出现（作用与反作用）。",
+    points: [
+      ["第一定律", "不受外力时，物体保持静止或匀速直线运动。"],
+      ["第二定律", "合外力 = 质量 × 加速度，即 F = ma。"],
+      ["第三定律", "作用力与反作用力大小相等、方向相反。"],
+    ],
+    detail:
+      "三条定律环环相扣：第一定律给出「惯性」与参考系，第二定律给出力与运动的定量关系，第三定律揭示力的相互性。它们共同解释了从走路到火箭升空的几乎一切机械运动。",
+    sources: ["人教版 · 物理必修一 · 第4章"],
+    followups: ["什么是惯性？", "走路时为什么地面会「推」我们前进？"],
+  },
+  "为什么钠放进水里会剧烈反应？": {
+    tag: "高中化学 · 金属",
+    summary:
+      "钠是非常活泼的金属，遇水会迅速置换出氢气并放出大量热，热量又点燃氢气，于是出现「浮、熔、游、响」的剧烈现象。",
+    points: [
+      ["活泼", "钠原子最外层只有 1 个电子，极易失去。"],
+      ["反应", "2Na + 2H₂O → 2NaOH + H₂↑，并放出大量热。"],
+      ["现象", "钠浮在水面、熔成小球、四处游动并发出嘶响。"],
+    ],
+    detail:
+      "正因为太活泼，钠在自然界没有游离态，实验室里要把它保存在煤油中隔绝空气和水。它的反应也直观演示了「金属活动性」——越活泼的金属，置换能力越强。",
+    sources: ["人教版 · 化学必修一 · 第3章"],
+    followups: ["为什么钠要保存在煤油里？", "金属活动性顺序是什么？"],
+  },
+  "二氧化碳为什么会让地球变暖？": {
+    tag: "地理 · 环境",
+    summary:
+      "二氧化碳像一层「玻璃罩」：让太阳的短波辐射进来，却挡住地面散发的长波热辐射，热量被困在大气中，于是全球气温升高——这就是温室效应。",
+    points: [
+      ["透光", "短波阳光可以顺利穿过大气到达地面。"],
+      ["保温", "地面发出的长波辐射被 CO₂ 吸收并部分送回地面。"],
+      ["累积", "人类排放使 CO₂ 浓度升高，保温效应不断增强。"],
+    ],
+    detail:
+      "适度的温室效应让地球宜居；但化石燃料燃烧让 CO₂ 浓度过快上升，打破了平衡，带来气候变化。这也是「碳达峰、碳中和」成为全球议题的原因。",
+    sources: ["地理 · 必修一", "科普 · IPCC 报告"],
+    followups: ["什么是碳中和？", "我们能做些什么减少碳排放？"],
+  },
+  "《论语》里「学而时习之」是什么意思？": {
+    tag: "语文 · 文言",
+    summary:
+      "「学而时习之，不亦说乎」意为：学到知识后按时温习、并付诸实践，不也是一件愉快的事吗？它强调复习与践行，并从中获得乐趣。",
+    points: [
+      ["学", "获取新的知识与道理。"],
+      ["习", "按时温习，并在生活中实践运用。"],
+      ["说", "通「悦」，指从温习与践行中得到的喜悦。"],
+    ],
+    detail:
+      "这句话是《论语》开篇第一章，奠定了儒家「重学」的基调。它提醒我们：学习不是一次性地记住，而是反复温习、学以致用的持续过程——与「格物致知」一脉相通。",
+    sources: ["《论语 · 学而》"],
+    followups: ["「温故而知新」是什么意思？", "孔子是怎样的人？"],
+  },
+  "二十四节气是怎么来的？": {
+    tag: "地理 · 传统文化",
+    summary:
+      "二十四节气是古人根据太阳在黄道上的位置划分的时间体系，每隔约 15 天一个，用来反映四季更替、指导农业生产。",
+    points: [
+      ["依据", "把太阳周年视运动的黄道等分为 24 份。"],
+      ["作用", "指导播种、收割等农事，是古代的「农业历」。"],
+      ["遗产", "2016 年被列入联合国教科文组织非遗名录。"],
+    ],
+    detail:
+      "从立春到大寒，节气名既描述天象（如夏至、冬至），也描述物候与农事（如惊蛰、芒种）。它是中国人观察自然、顺应自然的智慧结晶，至今仍影响着日常生活。",
+    sources: ["地理 · 必修一", "非遗名录 · 二十四节气"],
+    followups: ["冬至为什么要吃饺子？", "为什么农历会有闰月？"],
+  },
+  "函数和方程有什么区别？": {
+    tag: "初中数学 · 代数",
+    summary:
+      "方程是含未知数的等式，求的是「使等式成立的解」；函数描述两个变量之间的对应关系，关注的是「一个量如何随另一个量变化」。",
+    points: [
+      ["方程", "一个等式，目标是解出未知数的具体值。"],
+      ["函数", "一种对应关系：每个 x 都对应唯一的 y。"],
+      ["联系", "令函数值 y = 0，就得到对应的方程。"],
+    ],
+    detail:
+      "可以这样记：方程问「未知数是多少」，函数问「它们怎样一起变化」。函数把孤立的「解」连成了一条曲线，让我们看见变量之间的规律——这是从算术走向代数的关键一步。",
+    sources: ["人教版 · 数学八年级"],
+    followups: ["什么是一次函数？", "函数图象怎么画？"],
+  },
+  "DNA 为什么是双螺旋结构？": {
+    tag: "高中生物 · 遗传",
+    summary:
+      "DNA 由两条链通过碱基配对（A–T、G–C）盘绕成双螺旋。这种结构既稳定，又便于解开复制，恰好满足储存和传递遗传信息的需要。",
+    points: [
+      ["配对", "A 对 T、G 对 C，靠氢键把两条链连在一起。"],
+      ["稳定", "双链与螺旋把碱基保护在内侧，不易损坏。"],
+      ["复制", "解旋后每条链都能作为模板，精确复制。"],
+    ],
+    detail:
+      "1953 年沃森与克里克提出双螺旋模型，被誉为 20 世纪最重要的发现之一。结构决定功能：正是「互补配对」让遗传信息既能稳定保存，又能准确传给下一代。",
+    sources: ["人教版 · 生物必修二", "1953 · 沃森与克里克"],
+    followups: ["基因和 DNA 是什么关系？", "什么是基因突变？"],
+  },
+};
+
+/* The full pool of preset questions (keys of ANSWERS). */
+const QUESTION_POOL = Object.keys(ANSWERS);
+
+/* Return `n` distinct random questions from the pool, avoiding the
+   ones in `exclude` when possible (used by the 换一批 shuffle). */
+function sampleQuestions(n, exclude = []) {
+  const ex = new Set(exclude);
+  let avail = QUESTION_POOL.filter((q) => !ex.has(q));
+  if (avail.length < n) avail = QUESTION_POOL.slice(); // pool small → allow repeats of older set
+  const shuffled = avail.slice();
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled.slice(0, n);
+}
+
+const GENERIC_ANSWER = (q) => ({
+  tag: "AI 生成 · 结构化回答",
+  summary:
+    "这是「问题捕手」为你的问题生成的结构化回答示意。正式版本会接入学科知识库，给出经核对的要点、推理与可追溯的来源。",
+  points: [
+    ["核心结论", "先给出一句话的直接回答，让你快速抓住重点。"],
+    ["关键要点", "再用 2–3 条要点展开，呈现推理与依据。"],
+    ["延伸追问", "最后给出可继续探究的问题，把好奇接力下去。"],
+  ],
+  detail:
+    "当前为六月落地演示版：界面框架与结构化回答的呈现方式已就绪，AI 推理能力将在后续迭代中逐步深化、接入真实的学科语料与校本资源。",
+  sources: ["问题捕手 · 演示框架 v0.1"],
+  followups: QUESTION_POOL.slice(0, 2),
+});
+
+function getAnswer(q) {
+  return ANSWERS[q] || GENERIC_ANSWER(q);
+}
+
+Object.assign(window, { QUESTION_POOL, sampleQuestions, ANSWERS, getAnswer });
+
+/* ===== chrome ===== */
+/* Chrome.jsx — Icon helper, immersive Background, and Header bar. */
+
+function Icon({ name, size = 20, color = "currentColor", stroke = 1.75, style }) {
+  return (
+    <i
+      data-lucide={name}
+      style={{ width: size, height: size, color, display: "inline-flex", ...style }}
+      data-stroke={stroke}
+    ></i>
+  );
+}
+function useLucide(dep) {
+  useEffect(() => {
+    if (window.lucide) {
+      window.lucide.createIcons({ attrs: { "stroke-width": 1.75, width: 20, height: 20 } });
+    }
+  });
+}
+
+function Background() {
+  return (
+    <div className="qc-bg" aria-hidden="true">
+      <span className="qc-bloom qc-bloom-a"></span>
+      <span className="qc-bloom qc-bloom-b"></span>
+      <span className="qc-bloom qc-bloom-c"></span>
+      <div className="qc-grid"></div>
+    </div>
+  );
+}
+
+function Header({ onHome }) {
+  return (
+    <header className="qc-header glass">
+      <div className="qc-brand qc-brand-btn" onClick={onHome} title="返回待机屏保" role="button">
+        <span className="qc-mark">
+          <Icon name="scan-search" size={22} color="var(--brand-cyan)" />
+        </span>
+        <span className="qc-wordmark">
+          格致<span className="qc-accent">问题捕手</span>
+        </span>
+        <span className="qc-sub">GEZHI · QUESTION CATCHER</span>
+      </div>
+      <div className="qc-status">
+        {onHome && (
+          <button className="qc-standby-link" onClick={onHome} title="返回待机">
+            <Icon name="grip" size={15} />
+            <span className="label-mono">待机</span>
+          </button>
+        )}
+        <span className="qc-statuspill">
+          <span className="qc-dot"></span>
+          <span className="label-mono">捕手已就绪 · READY</span>
+        </span>
+      </div>
+    </header>
+  );
+}
+
+Object.assign(window, { Icon, useLucide, Background, Header });
+
+/* ===== ask ===== */
+/* AskWindow.jsx — 询问输入栏（含语音 / 拍照输入接口）+ 预设问题浮层。 */
+
+function AskWindow({ value, onChange, onSubmit, focused, onFocus, onBlur, busy }) {
+  const inputRef = useRef(null);
+  const fileRef = useRef(null);
+  const [listening, setListening] = useState(false);
+  const [hint, setHint] = useState(null);
+
+  function flash(msg) {
+    setHint(msg);
+    window.clearTimeout(flash._t);
+    flash._t = window.setTimeout(() => setHint(null), 2200);
+  }
+  function toggleVoice(e) {
+    e.stopPropagation();
+    const next = !listening;
+    setListening(next);
+    flash(next ? "正在聆听…… 说出你的问题（演示）" : null);
+    if (next) window.setTimeout(() => setListening(false), 2600);
+  }
+  function pickPhoto(e) {
+    e.stopPropagation();
+    fileRef.current && fileRef.current.click();
+  }
+  function onFile(e) {
+    if (e.target.files && e.target.files[0]) {
+      flash("已接收照片：" + e.target.files[0].name + "（演示·识别中）");
+      e.target.value = "";
+    }
+  }
+
+  return (
+    <div className="qc-ask-wrap">
+      <div
+        className={"qc-ask glass" + (focused ? " is-focused" : "") + (listening ? " is-listening" : "")}
+        onClick={() => inputRef.current && inputRef.current.focus()}
+      >
+        <span className="qc-ask-dot"></span>
+        <input
+          ref={inputRef}
+          className="qc-ask-input"
+          type="text"
+          value={value}
+          placeholder="输入你的问题，或从下方选择一个开始……"
+          onChange={(e) => onChange(e.target.value)}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          onKeyDown={(e) => { if (e.key === "Enter" && value.trim()) onSubmit(); }}
+          disabled={busy}
+        />
+
+        {/* 语音 / 拍照 输入接口 —— 键鼠输入栏的侧边 */}
+        <div className="qc-input-tools">
+          <button
+            className={"qc-tool" + (listening ? " is-on" : "")}
+            title="语音输入"
+            aria-label="语音输入"
+            onClick={toggleVoice}
+          >
+            <Icon name="mic" size={19} />
+          </button>
+          <button className="qc-tool" title="拍照 / 上传图片提问" aria-label="拍照输入" onClick={pickPhoto}>
+            <Icon name="camera" size={19} />
+          </button>
+          <input ref={fileRef} type="file" accept="image/*" capture="environment"
+                 style={{ display: "none" }} onChange={onFile} />
+        </div>
+
+        <span className="qc-ask-sep"></span>
+
+        <button
+          className="qc-ask-btn"
+          disabled={!value.trim() || busy}
+          onClick={(e) => { e.stopPropagation(); if (value.trim()) onSubmit(); }}
+        >
+          {busy ? "捕捉中" : "捕捉"}
+          <Icon name={busy ? "loader" : "arrow-right"} size={17} />
+        </button>
+      </div>
+
+      {(hint || listening) && (
+        <div className="qc-input-hint">
+          {listening && <span className="qc-listen-wave"><span></span><span></span><span></span><span></span><span></span></span>}
+          <span>{hint || "正在聆听……"}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* Tiered floating preset questions (unchanged). */
+function PresetChips({ batch, batchId, onPick, onShuffle, label = "试着问问看，或换一批" }) {
+  const rowSizes = [2, 3, 3];
+  const rows = [];
+  let i = 0;
+  for (const size of rowSizes) {
+    if (i >= batch.length) break;
+    rows.push(batch.slice(i, i + size));
+    i += size;
+  }
+  let gi = 0;
+  return (
+    <div className="qc-float">
+      <div className="qc-presets-label">
+        <Icon name="sparkles" size={15} color="var(--fg-accent)" />
+        <span className="label-mono">{label}</span>
+      </div>
+      <div className="qc-float-rows" key={batchId}>
+        {rows.map((row, ri) => (
+          <div className="qc-float-row" data-depth={ri} key={ri}>
+            {row.map((q) => {
+              const idx = gi++;
+              return (
+                <span className="qc-fwrap" key={q} style={{ animationDelay: idx * 70 + "ms" }}>
+                  <span className="qc-fbob" style={{ animationDelay: (idx % 5) * 0.7 + "s" }}>
+                    <button className="qc-chip qc-fchip" onClick={() => onPick(q)}>{q}</button>
+                  </span>
+                </span>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+      <button className="qc-shuffle" onClick={onShuffle}>
+        <Icon name="shuffle" size={15} />
+        换一批好问题
+      </button>
+    </div>
+  );
+}
+
+Object.assign(window, { AskWindow, PresetChips });
+
+/* ===== answer ===== */
+/* StructuredAnswer.jsx — 思考脚手架（不直接给答案）
+   问题捕手不直接给出结论，而是提供：思维导图 · 相关文献 · 引导追问，
+   帮助学生自己抵达答案。                                              */
+
+/* Infer a literature "type" badge from the source string. */
+function sourceKind(s) {
+  if (/人教|必修|选修|年级|教材|课本/.test(s)) return ["教材", "book-marked"];
+  if (/拓展|校本|图解|动图|实验/.test(s)) return ["校本拓展", "flask-conical"];
+  if (/报告|IPCC|论文|沃森|克里克|命题|原本|论语|礼记|史馆|名录/.test(s)) return ["文献", "scroll-text"];
+  return ["资料", "file-text"];
+}
+
+function AnswerHeader({ question, tag, onReset }) {
+  return (
+    <div className="qc-ans-head">
+      <div className="qc-ans-q">
+        <span className="qc-ans-qmark"><Icon name="scan-search" size={18} color="var(--brand-cyan)" /></span>
+        <div>
+          <div className="label-mono qc-ans-tag">{tag}</div>
+          <h2 className="qc-ans-question">{question}</h2>
+        </div>
+      </div>
+      <button className="qc-ghost-btn" onClick={onReset}>
+        <Icon name="rotate-ccw" size={16} />
+        新问题
+      </button>
+    </div>
+  );
+}
+
+function Block({ index, children, label, icon }) {
+  return (
+    <section className="qc-block" style={{ animationDelay: index * 120 + "ms" }}>
+      <div className="qc-block-rail">
+        <span className="qc-block-num">{String(index + 1).padStart(2, "0")}</span>
+        <span className="qc-block-line"></span>
+      </div>
+      <div className="qc-block-body">
+        <div className="qc-block-label">
+          <Icon name={icon} size={16} color="var(--brand-cyan)" />
+          <span className="overline">{label}</span>
+        </div>
+        {children}
+      </div>
+    </section>
+  );
+}
+
+/* 思维导图：中心节点 = 问题，分支 = 关键概念（只给线索，不给结论）。 */
+function MindMap({ question, points }) {
+  const core = question.replace(/[？?。.]+$/, "");
+  return (
+    <div className="qc-mind" role="img" aria-label="思维导图">
+      <div className="qc-mind-core">
+        <span className="qc-mind-core-dot"></span>
+        <span className="qc-mind-core-text">{core}</span>
+      </div>
+      <ul className="qc-mind-branches">
+        {points.map(([k, v], i) => (
+          <li className="qc-mind-branch" key={k} style={{ animationDelay: 120 + i * 110 + "ms" }}>
+            <span className="qc-mind-link"></span>
+            <div className="qc-mind-node">
+              <span className="qc-mind-key">{k}</span>
+              <span className="qc-mind-hint">{v}</span>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function StructuredAnswer({ question, data, onPick }) {
+  const guides = (data.followups || []).slice();
+  return (
+    <div className="qc-answer glass">
+      <AnswerHeader question={question} tag={data.tag} onReset={() => onPick("__reset__")} />
+
+      <div className="qc-scaffold-note">
+        <Icon name="compass" size={16} color="var(--brand-cyan)" />
+        <span>问题捕手<strong>不直接给出答案</strong>，而是为你铺设思考的脚手架——先看导图、查文献、试着自己作答。</span>
+      </div>
+
+      <Block index={0} label="思维导图 · MIND MAP" icon="git-fork">
+        <MindMap question={question} points={data.points} />
+      </Block>
+
+      <Block index={1} label="相关文献 · REFERENCES" icon="library">
+        <div className="qc-refs">
+          {data.sources.map((s) => {
+            const [kind, icon] = sourceKind(s);
+            return (
+              <div className="qc-ref" key={s}>
+                <span className="qc-ref-ic"><Icon name={icon} size={16} color="var(--fg-accent)" /></span>
+                <div className="qc-ref-body">
+                  <span className="qc-ref-kind label-mono">{kind}</span>
+                  <span className="qc-ref-title">{s}</span>
+                </div>
+                <Icon name="arrow-up-right" size={15} color="var(--fg3)" />
+              </div>
+            );
+          })}
+        </div>
+        <p className="qc-method">
+          <Icon name="route" size={14} color="var(--fg-accent)" style={{ marginRight: 6, verticalAlign: "-2px" }} />
+          思路提示：{data.detail}
+        </p>
+      </Block>
+
+      <Block index={2} label="引导追问 · THINK FURTHER" icon="message-circle-question">
+        <p className="qc-guide-lead">带着这些问题，再读一遍资料，试着自己说清楚：</p>
+        <div className="qc-followups">
+          {guides.map((f) => (
+            <button key={f} className="qc-chip qc-chip-accent" onClick={() => onPick(f)}>
+              {f}
+              <Icon name="arrow-up-right" size={15} />
+            </button>
+          ))}
+        </div>
+      </Block>
+    </div>
+  );
+}
+
+Object.assign(window, { StructuredAnswer });
+
+/* ===== standby ===== */
+/* Standby.jsx — 待机动态屏保：漂浮的「对话气泡」问题瀑布流。
+   每个气泡都可点击，直接进入该问题的探究。                         */
+
+/* 2025 格初十大好问题（来自评选结果），含提问者信息与思考脚手架。 */
+const GOOD_QUESTIONS = [
+  { rank: "TOP 1", grade: "初二4班", author: "禇霏洋",
+    headline: "AI 创作的作品，归属权该归谁？",
+    question: "基于 AI 绘画、写作等生成内容的爆发式增长，我们该为这些 AI 创作者建立一套什么样的规则，来确认作品归属与责任认定，以保护作者的权益？",
+    keys: ["著作权法", "训练数据", "责任主体"],
+    ref: "《生成式人工智能服务管理暂行办法》 · WIPO 人工智能与知识产权报告",
+    prompt: "AI 是「工具」还是「作者」？两种立场下，归属与担责会走向完全不同的规则。" },
+  { rank: "TOP 1", grade: "初一12班", author: "王承睿 · 梁效辅",
+    headline: "月球发电站，建在朝地球还是背地球的一面？",
+    question: "如果我们派一个机器人去月球建造「太阳能」发电站，你觉得应该把这个电站建在月球的什么地方——是永远面向地球的那一面，还是背对地球的那一面？",
+    keys: ["潮汐锁定", "光照时长", "能量传输"],
+    ref: "NASA 月球原位资源利用（ISRU） · 潮汐锁定原理",
+    prompt: "先想清楚：这座电站是为「谁」供电——地球，还是月球基地？" },
+  { rank: "TOP 2", grade: "初二3班", author: "沈灵",
+    headline: "该不该给机器人「权利」？",
+    question: "基于《人工智能与人类未来》中提到的——机器人像奴隶一样被人类喜欢，而给予机器人一些权利又会给人类带来麻烦——为平衡好这一问题，人类到底该怎么做？",
+    keys: ["机器人伦理", "权利与责任", "阿西莫夫三定律"],
+    ref: "《人工智能与人类未来》（基辛格等） · 欧盟《人工智能法案》",
+    prompt: "「喜欢它」和「赋予它权利」是两件事吗？试着把它们分开来想。" },
+  { rank: "TOP 3", grade: "初二3班", author: "赵文睿",
+    headline: "干细胞治疗成熟后，规则该怎么定？",
+    question: "干细胞治疗技术发展成熟后，我们应制定怎样的规则，使其在医疗领域得到合理分配、在非医疗领域（如美容、养老）得到合理运用？它的推行又是否会冲击现有医疗体系？",
+    keys: ["医疗分配", "非医疗滥用", "伦理审查"],
+    ref: "《干细胞临床研究管理办法》 · ISSCR 干细胞研究指南",
+    prompt: "先分清「治病」与「美容养老」——它们需要同一套规则吗？" },
+  { rank: "TOP 3", grade: "初一9班", author: "丁大为 · 赖子浩 · 孙榕隽",
+    headline: "智能驾驶的电子信号，能用量子取代吗？",
+    question: "基于人工智能与计算机技术，智能驾驶中的电子信号，能否改用量子来代替？",
+    keys: ["量子通信", "抗干扰", "工程可行性"],
+    ref: "量子密钥分发（QKD）原理 · 车联网 V2X 资料",
+    prompt: "先问一句：现在的电子信号，瓶颈到底卡在哪一步？" },
+  { rank: "TOP 4", grade: "初一4班", author: "陶凌瑶 · 张泰睿 · 朱翼添",
+    headline: "如何把学习「藏」进游戏里？",
+    question: "基于 AI 游戏化学习的理念，如何将学习过程嵌入游戏的反馈、剧情、组队机制，让学生更主动地投入？",
+    keys: ["游戏化", "即时反馈", "内在动机"],
+    ref: "《游戏改变世界》（McGonigal） · 心流理论",
+    prompt: "是把学习「包装成游戏」，还是让学习本身像游戏一样有反馈？" },
+  { rank: "TOP 4", grade: "初二3班", author: "于凌晟",
+    headline: "电子游戏，真能改变军事训练吗？",
+    question: "美军在 9·11 后用电子游戏训练士兵、引导新兵入伍（如 DARPA 的系列产品）。这种方法可行吗？有何优劣？能作为主要手段还是仅作辅助？电子游戏究竟能否影响现代军事训练？",
+    keys: ["仿真训练", "DARPA", "优势与局限"],
+    ref: "America's Army 项目 · 严肃游戏（Serious Games）研究",
+    prompt: "把它拆成三问：能练什么？不能练什么？只能当辅助吗？" },
+  { rank: "TOP 5", grade: "初二3班", author: "高圆",
+    headline: "航母防空，怎么和城市近海安防联动？",
+    question: "基于海基—岸基协同防御与「低慢小」目标反制原理：面对沿海城市周边海域的无人机、无人艇威胁，航母防空反导体系该如何与城市近海安防系统联动，以打破信息壁垒、提升处置效率？",
+    keys: ["低慢小反制", "信息壁垒", "体系联动"],
+    ref: "反无人机（C-UAS）技术综述 · 多传感器融合资料",
+    prompt: "联动的第一道难关，是「数据互通」还是「指挥权归属」？" },
+  { rank: "TOP 6", grade: "初一6班", author: "茅嘉怡",
+    headline: "元宇宙课堂里，如何守护身份安全？",
+    question: "我们如何确保学生在未来「元宇宙」虚拟课堂和线上社交场景中的身份安全？",
+    keys: ["数字身份", "隐私保护", "可信认证"],
+    ref: "去中心化身份（DID）与零知识证明 · GDPR 未成年人条款",
+    prompt: "「证明你是你」和「不暴露你是谁」，能同时做到吗？" },
+  { rank: "TOP 7", grade: "初一12班", author: "王之裕 · 陆闻",
+    headline: "如何减小后座力、提升单兵武器精准度？",
+    question: "基于现代火药枪支后座力较大、从而导致精准度下降：为减少战争伤亡与经济损耗，我们怎样才能提升单兵武器的精准度？",
+    keys: ["后座力", "稳定结构", "材料与配重"],
+    ref: "枪械动力学基础 · 减后坐装置原理资料",
+    prompt: "后座力源于动量守恒——该从「枪」还是「人」这一端下手？" },
+];
+
+/* 为每条好问题注册「思考脚手架」式回答，进入完整探究时呈现导图+文献而非直接答案。 */
+(function registerGoodAnswers() {
+  if (!window.ANSWERS) return;
+  const hints = ["先弄清它的定义与边界。", "找出它与问题的关键联系。", "据此推演可能的方案与取舍。"];
+  GOOD_QUESTIONS.forEach((r) => {
+    window.ANSWERS[r.question] = {
+      tag: r.rank + " · " + r.grade + " · " + r.author,
+      summary: "这是一个开放性的好问题——问题捕手不直接作答，而是为你铺好思考的脚手架：先理清概念，再查阅文献，试着自己回答。",
+      points: r.keys.map((k, i) => [k, hints[i] || "围绕它继续追问。"]),
+      detail: r.prompt,
+      sources: r.ref.split(" · "),
+      followups: [r.prompt],
+    };
+  });
+})();
+
+function FloatBubble({ rec, depth, active, onPick }) {
+  return (
+    <button className={"qc-fbub qc-depth-" + depth + (active ? " is-active" : "")} onClick={() => onPick(rec)}>
+      <span className="qc-fbub-rank">{rec.rank}</span>
+      <span className="qc-fbub-text">{rec.headline}</span>
+    </button>
+  );
+}
+
+function Lane({ recs, depth, top, dur, dir, onPick, activeId }) {
+  const loop = recs.concat(recs);
+  return (
+    <div className="qc-lane" style={{ top: top + "%" }}>
+      <div className="qc-lane-track" style={{ animationDuration: dur + "s", animationDirection: dir === "right" ? "reverse" : "normal" }}>
+        {loop.map((r, i) => (
+          <FloatBubble key={i} rec={r} depth={depth} active={r.id === activeId} onPick={onPick} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function FeatureBubble({ rec, onExplore }) {
+  return (
+    <div className="qc-feature">
+      <div className="qc-feat-top">
+        <span className="qc-feat-rank"><Icon name="award" size={13} color="currentColor" />{rec.rank} · 好问题</span>
+        <span className="qc-feat-asker"><Icon name="user-round" size={13} color="currentColor" /><b>{rec.author}</b> · {rec.grade}</span>
+        <span className="qc-feat-flag"><Icon name="quote" size={12} color="currentColor" />FEATURED</span>
+      </div>
+      <p className="qc-feat-q">{rec.question}</p>
+      <div className="qc-feat-scaffold">
+        <div className="qc-feat-row">
+          <span className="overline"><Icon name="git-fork" size={13} color="var(--brand-cyan)" />线索</span>
+          <span className="qc-feat-keys">{rec.keys.map((k) => <span className="qc-feat-key" key={k}>{k}</span>)}</span>
+        </div>
+        <div className="qc-feat-row">
+          <span className="overline"><Icon name="library" size={13} color="var(--brand-cyan)" />文献</span>
+          <span>{rec.ref}</span>
+        </div>
+        <div className="qc-feat-row">
+          <span className="overline"><Icon name="message-circle-question" size={13} color="var(--brand-cyan)" />追问</span>
+          <span>{rec.prompt}</span>
+        </div>
+      </div>
+      <button className="qc-feat-cta" onClick={() => onExplore(rec.question)}>
+        <Icon name="compass" size={16} color="currentColor" />展开完整探究
+      </button>
+    </div>
+  );
+}
+
+function Standby({ onPick, onEnter }) {
+  useLucide();
+  const recs = useMemo(() => GOOD_QUESTIONS.map((r, i) => ({ ...r, id: i })), []);
+  const lanes = useMemo(() => {
+    const cfg = [
+      { top: 6,  depth: 2, dur: 62, dir: "left" },
+      { top: 17, depth: 1, dur: 84, dir: "right" },
+      { top: 28, depth: 0, dur: 104, dir: "left" },
+      { top: 49, depth: 0, dur: 96, dir: "right" },
+      { top: 62, depth: 2, dur: 68, dir: "left" },
+      { top: 73, depth: 1, dur: 88, dir: "right" },
+    ];
+    return cfg.map((c, li) => {
+      const rot = recs.slice(li).concat(recs.slice(0, li));
+      const items = li % 2 ? rot.slice().reverse() : rot;
+      return { ...c, items };
+    });
+  }, [recs]);
+
+  const [fi, setFi] = useState(0);
+  const [paused, setPaused] = useState(false);
+  useEffect(() => {
+    if (paused) return;
+    const t = setInterval(() => setFi((n) => (n + 1) % recs.length), 8000);
+    return () => clearInterval(t);
+  }, [paused, recs.length]);
+
+  const featured = recs[fi];
+  function focusRec(rec) {
+    setFi(rec.id);
+    setPaused(true);
+    clearTimeout(focusRec._t);
+    focusRec._t = setTimeout(() => setPaused(false), 16000);
+  }
+
+  return (
+    <div className="qc-standby">
+      <div className="qc-field" aria-hidden="false">
+        {lanes.map((ln, i) => (
+          <Lane key={i} recs={ln.items} depth={ln.depth} top={ln.top} dur={ln.dur} dir={ln.dir} onPick={focusRec} activeId={featured.id} />
+        ))}
+      </div>
+      <div className="qc-field-veil"></div>
+
+      <div className="qc-feature-wrap">
+        <FeatureBubble key={featured.id} rec={featured} onExplore={onPick} />
+        <div className="qc-feat-dots">
+          {recs.map((r) => (
+            <button key={r.id} className={"qc-feat-dot" + (r.id === featured.id ? " is-on" : "")}
+              onClick={() => focusRec(r)} aria-label={"好问题 " + (r.id + 1)}></button>
+          ))}
+        </div>
+      </div>
+
+      <div className="qc-standby-foot">
+        <span className="qc-eyebrow">
+          <Icon name="scan-search" size={14} color="var(--fg-accent)" />
+          <span className="label-mono">格致 · 问题捕手 · 2025 十大好问题</span>
+        </span>
+        <h1 className="qc-standby-title">你想<span className="qc-accent">捕捉</span>哪个问题？</h1>
+        <p className="qc-standby-tagline">轻触任意漂浮的问题，看见它的思考脚手架——或自己提一个。</p>
+        <button className="qc-enter-btn" onClick={onEnter}>
+          <Icon name="pen-line" size={18} color="currentColor" />我要自己提问
+        </button>
+      </div>
+    </div>
+  );
+}
+
+Object.assign(window, { Standby });
+
+/* ===== app ===== */
+function App() {
+  const [mode, setMode]     = useState("standby"); // "standby" | "app"
+  const [draft, setDraft]   = useState("");
+  const [query, setQuery]   = useState(null);
+  const [focused, setFocused] = useState(false);
+  const [busy, setBusy]     = useState(false);
+  const [batch, setBatch]   = useState(() => sampleQuestions(8));
+  const [batchId, setBatchId] = useState(0);
+
+  useLucide();
+
+  function shuffleBatch() {
+    setBatch(sampleQuestions(8, batch));
+    setBatchId((n) => n + 1);
+  }
+
+  function submit(q) {
+    const question = (q ?? draft).trim();
+    if (!question) return;
+    setMode("app");
+    setDraft(question);
+    setBusy(true);
+    setQuery(null);
+    setTimeout(() => { setQuery(question); setBusy(false); }, 1100);
+  }
+
+  function pick(q) {
+    if (q === "__reset__") { reset(); return; }
+    submit(q);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function reset() {
+    setQuery(null); setBusy(false); setDraft("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function enterApp() { setMode("app"); reset(); }
+  function toStandby() { setMode("standby"); setQuery(null); setBusy(false); setDraft(""); }
+
+  /* Kiosk idle → return to the standby screensaver after inactivity. */
+  const idle = useRef(null);
+  useEffect(() => {
+    if (mode !== "app") return;
+    const rearm = () => {
+      window.clearTimeout(idle.current);
+      idle.current = window.setTimeout(toStandby, 90000);
+    };
+    const evs = ["pointerdown", "keydown", "mousemove", "wheel", "touchstart"];
+    evs.forEach((e) => window.addEventListener(e, rearm));
+    rearm();
+    return () => { window.clearTimeout(idle.current); evs.forEach((e) => window.removeEventListener(e, rearm)); };
+  }, [mode]);
+
+  const hasAnswer = !!query;
+  const answer = query ? getAnswer(query) : null;
+
+  return (
+    <div className="qc-app">
+      <Background />
+
+      {mode === "standby" ? (
+        <Standby onPick={pick} onEnter={enterApp} />
+      ) : (
+        <React.Fragment>
+          <Header onHome={toStandby} />
+          <main className={"qc-stage" + (hasAnswer || busy ? " has-answer" : "")}>
+            {!hasAnswer && (
+              <div className="qc-hero">
+                <span className="qc-eyebrow">
+                  <Icon name="sparkles" size={14} color="var(--fg-accent)" />
+                  <span className="label-mono">格物致知 · 从一个好问题开始</span>
+                </span>
+                <h1 className="qc-title">
+                  你想<span className="qc-accent">捕捉</span>什么问题？
+                </h1>
+                <p className="qc-tagline">好问题，是答案的一半。问题捕手不替你作答，而是给你思考的脚手架。</p>
+              </div>
+            )}
+
+            <AskWindow
+              value={draft}
+              onChange={setDraft}
+              onSubmit={() => submit()}
+              focused={focused}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
+              busy={busy}
+            />
+
+            {!hasAnswer && !busy && (
+              <PresetChips batch={batch} batchId={batchId} onPick={pick} onShuffle={shuffleBatch} />
+            )}
+
+            {busy && (
+              <div className="qc-loading glass">
+                <div className="qc-bars"><span></span><span></span><span></span><span></span></div>
+                <span className="qc-loading-text">问题捕手正在为你整理思考脚手架……</span>
+              </div>
+            )}
+
+            {hasAnswer && (
+              <StructuredAnswer question={query} data={answer} onPick={pick} />
+            )}
+          </main>
+          <footer className="qc-foot">问题捕手 · 演示框架 v0.1 · 格致中学</footer>
+        </React.Fragment>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
+</script>
+<script>
+(function(){
+  function boot(){
+    if (!window.Babel || !window.React || !window.ReactDOM) { return setTimeout(boot, 30); }
+    var src = document.getElementById('app-src').textContent;
+    var out = Babel.transform(src, { presets: [['react', { runtime: 'classic' }]] }).code;
+    (0, eval)(out);
+  }
+  boot();
+})();
+</script>
+</body>
+</html>
