@@ -486,6 +486,146 @@ body {
   .qc-header { margin: 12px; }
   .qc-ans-head { flex-direction: column; }
 }
+
+/* ---------- 待机屏：环形问题轮播 ---------- */
+.qc-standby-ring, .qc-standby-ring * { cursor: none; }
+.qc-ring-stage { position: absolute; top: 0; left: 0; right: 0; height: 74vh; overflow: hidden; z-index: 1; }
+.qc-ring-q { position: absolute; top: 0; left: 0; transform: translate(-9999px, -9999px);
+  display: flex; flex-direction: column; align-items: center; gap: 7px; width: max-content; max-width: 360px;
+  padding: 8px 12px; background: none; border: none; box-shadow: none;
+  color: var(--fg2); font-family: var(--font-body); font-size: 18px; font-weight: 600; line-height: 1.42;
+  text-align: center; white-space: normal; opacity: 0; will-change: transform, opacity;
+  text-shadow: 0 2px 18px rgba(5,11,31,0.95), 0 0 3px rgba(5,11,31,0.7); }
+.qc-ring-text { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.qc-ring-q.is-active .qc-ring-text { -webkit-line-clamp: unset; overflow: visible; }
+.qc-ring-meta { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.04em;
+  color: var(--fg-accent); opacity: 0.78; }
+.qc-ring-q.is-active { color: #FFFFFF; }
+.qc-ring-q.is-active .qc-ring-meta { color: var(--brand-cyan-hi); opacity: 1; }
+
+/* 选中 = 四角"框选"角标（呼应取景准星） */
+.qc-ring-frame { position: absolute; inset: -14px -18px; opacity: 0; transition: opacity var(--dur-base); }
+.qc-ring-q.is-active .qc-ring-frame { opacity: 1; }
+.qc-ring-frame i { position: absolute; width: 18px; height: 18px; }
+.qc-ring-frame i:nth-child(1) { top: 0; left: 0; border-top: 2.5px solid var(--brand-cyan); border-left: 2.5px solid var(--brand-cyan); }
+.qc-ring-frame i:nth-child(2) { top: 0; right: 0; border-top: 2.5px solid var(--brand-cyan); border-right: 2.5px solid var(--brand-cyan); }
+.qc-ring-frame i:nth-child(3) { bottom: 0; right: 0; border-bottom: 2.5px solid var(--brand-cyan); border-right: 2.5px solid var(--brand-cyan); }
+.qc-ring-frame i:nth-child(4) { bottom: 0; left: 0; border-bottom: 2.5px solid var(--brand-cyan); border-left: 2.5px solid var(--brand-cyan); }
+
+.qc-ring-veil { position: absolute; left: 0; right: 0; bottom: 0; height: 42vh; z-index: 2; pointer-events: none;
+  background: linear-gradient(to top, var(--brand-abyss) 8%, rgba(5,11,31,0.66) 40%, transparent 100%); }
+
+/* 自定义"取景准星"光标（缓慢旋转） */
+.qc-cursor { position: fixed; left: 0; top: 0; width: 42px; height: 42px; margin: -21px 0 0 -21px;
+  z-index: 9999; pointer-events: none; opacity: 0; transition: opacity 0.2s; }
+.qc-cursor svg { width: 100%; height: 100%; display: block; animation: qc-cursor-spin 9s linear infinite;
+  filter: drop-shadow(0 0 6px rgba(56,189,248,0.55)); }
+@keyframes qc-cursor-spin { to { transform: rotate(360deg); } }
+
+/* ---------- 拍照 / 语音 识别结果面板 ---------- */
+.qc-recog { margin-top: 14px; border-radius: var(--r-md); border: 1px solid var(--glass-border);
+  background: var(--glass-fill-strong); padding: 14px 16px; text-align: left;
+  animation: qc-recog-in var(--dur-base) var(--ease-glass); }
+@keyframes qc-recog-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.qc-recog-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.qc-recog-title { display: inline-flex; align-items: center; gap: 7px; font-size: 13.5px; font-weight: 600; color: var(--fg1); }
+.qc-recog-x { background: none; border: none; color: var(--fg3); cursor: pointer; padding: 4px;
+  border-radius: var(--r-xs); display: inline-flex; }
+.qc-recog-x:hover { color: var(--fg1); background: var(--glass-fill); }
+.qc-recog-body { display: flex; gap: 12px; align-items: stretch; }
+.qc-recog-thumb { width: 132px; max-height: 116px; object-fit: cover; border-radius: var(--r-sm);
+  border: 1px solid var(--glass-border); flex: none; }
+.qc-recog-box { flex: 1; resize: vertical; min-height: 64px; background: var(--brand-abyss); color: var(--fg1);
+  border: 1px solid var(--glass-border); border-radius: var(--r-sm); padding: 10px 12px;
+  font-family: var(--font-body); font-size: 15px; line-height: 1.55; outline: none; }
+.qc-recog-box:focus { border-color: var(--brand-cyan); box-shadow: var(--glow-focus); }
+.qc-recog-box::placeholder { color: var(--fg-muted); }
+.qc-recog-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  margin-top: 12px; flex-wrap: wrap; }
+.qc-recog-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--fg3); }
+.qc-recog-actions { display: inline-flex; gap: 8px; }
+.qc-recog-retry { display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-body); font-size: 13px;
+  color: var(--fg2); background: var(--glass-fill); border: 1px solid var(--glass-border); border-radius: var(--r-pill);
+  padding: 8px 14px; cursor: pointer; transition: all var(--dur-fast); }
+.qc-recog-retry:hover { color: var(--fg1); background: var(--glass-fill-strong); }
+.qc-recog-go { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-body); font-size: 13.5px;
+  font-weight: 600; color: var(--fg-on-accent); background: var(--accent-grad); border: none; border-radius: var(--r-pill);
+  padding: 9px 18px; cursor: pointer; box-shadow: var(--glow-cyan); transition: all var(--dur-fast); }
+.qc-recog-go:hover { filter: brightness(1.08); transform: translateY(-1px); }
+
+/* ---------- 相机实时取景弹窗 ---------- */
+.qc-cam-overlay { position: fixed; inset: 0; z-index: 80; display: flex; align-items: center; justify-content: center;
+  background: rgba(2, 6, 18, 0.78); backdrop-filter: blur(6px); padding: 24px; animation: qc-fade var(--dur-base) ease; }
+@keyframes qc-fade { from { opacity: 0; } to { opacity: 1; } }
+.qc-cam-modal { width: min(720px, 92vw); border-radius: var(--r-lg); border: 1px solid var(--glass-border-hi);
+  background: var(--brand-deep); padding: 16px; box-shadow: 0 30px 80px -20px rgba(0,0,0,0.7); }
+.qc-cam-stage { position: relative; border-radius: var(--r-md); overflow: hidden; background: #000; aspect-ratio: 16 / 10; }
+.qc-cam-video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.qc-cam-frame { position: absolute; inset: 16px; border: 2px dashed rgba(125,216,251,0.55);
+  border-radius: var(--r-sm); pointer-events: none; }
+.qc-cam-actions { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; }
+.qc-cam-cancel { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-body); font-size: 14px;
+  color: var(--fg2); background: var(--glass-fill); border: 1px solid var(--glass-border); border-radius: var(--r-pill);
+  padding: 10px 18px; cursor: pointer; transition: all var(--dur-fast); }
+.qc-cam-cancel:hover { color: var(--fg1); background: var(--glass-fill-strong); }
+.qc-cam-shot { width: 64px; height: 64px; border-radius: 50%; border: 4px solid var(--brand-cyan);
+  background: var(--accent-grad); cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+  box-shadow: var(--glow-cyan); transition: transform var(--dur-fast) var(--ease-snap); }
+.qc-cam-shot span { width: 44px; height: 44px; border-radius: 50%; background: #fff; display: block; }
+.qc-cam-shot:hover { transform: scale(1.06); }
+.qc-cam-shot:active { transform: scale(0.94); }
+.qc-cam-tip { font-size: 12px; color: var(--fg3); min-width: 110px; text-align: right; }
+
+/* ---------- 打印按钮（屏幕上） ---------- */
+.qc-print-row { display: flex; justify-content: center; margin-top: 26px;
+  padding-top: 22px; border-top: 1px solid var(--glass-border); }
+.qc-print-btn { display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-body); font-size: 14.5px; font-weight: 600; color: var(--fg-on-accent);
+  background: var(--accent-grad); border: none; padding: 12px 24px; border-radius: var(--r-pill);
+  cursor: pointer; box-shadow: var(--glow-cyan);
+  transition: transform var(--dur-fast) var(--ease-snap), filter var(--dur-fast); }
+.qc-print-btn:hover { filter: brightness(1.08); transform: translateY(-2px); }
+.qc-print-btn:active { transform: scale(0.97); }
+
+/* ---------- 打印版面（白底，仅打印时出现） ---------- */
+#qc-print-mount { display: none; }
+@media print {
+  #root { display: none !important; }
+  #qc-print-mount { display: block !important; }
+  @page { margin: 14mm; }
+  html, body { background: #fff !important; }
+  .qc-print-sheet { color: #0b1f3a;
+    font-family: "Noto Sans SC", system-ui, -apple-system, sans-serif; }
+  .qc-print-head { display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 2px solid #0b3b73; padding-bottom: 8px; margin-bottom: 18px;
+    font-size: 12px; letter-spacing: 0.04em; color: #0b3b73; }
+  .qc-print-brand { font-weight: 700; }
+  .qc-print-tag { display: inline-block; font-size: 11px; color: #1565c0;
+    border: 1px solid #90caf9; border-radius: 999px; padding: 2px 10px; margin-bottom: 10px; }
+  .qc-print-q { font-size: 20px; font-weight: 700; line-height: 1.4; margin: 0 0 22px; color: #0b1f3a; }
+  .qc-print-sec { margin-bottom: 18px; }
+  .qc-print-sec-t { font-size: 12px; font-weight: 700; color: #0b3b73; letter-spacing: 0.08em;
+    margin-bottom: 8px; border-left: 3px solid #1976d2; padding-left: 8px; }
+  .qc-print-map { list-style: none; margin: 0; padding: 0; }
+  .qc-print-map li { display: flex; gap: 10px; padding: 5px 0; font-size: 14px; line-height: 1.55; }
+  .qc-print-map li b { color: #1565c0; min-width: 74px; flex: none; }
+  .qc-print-list { margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.7; }
+  .qc-print-follow li { margin-bottom: 4px; }
+  /* 每条追问后留出手写横线 */
+  .qc-print-write { margin: 6px 0 14px; }
+  .qc-print-write span { display: block; height: 26px; border-bottom: 1px solid #c2d4ea; }
+  /* 【我的回答】作答框 —— 用真实边框画线，确保各种打印机都印得出来 */
+  .qc-print-answer { margin-top: 22px; break-inside: avoid; }
+  .qc-print-answer-t { font-size: 13px; font-weight: 700; color: #0b3b73;
+    letter-spacing: 0.04em; margin-bottom: 10px; }
+  .qc-print-answer-box { border: 1.5px solid #1976d2; border-radius: 8px;
+    padding: 10px 16px 4px; }
+  .qc-print-answer-box i { display: block; height: 30px; border-bottom: 1px solid #c2d4ea; }
+  .qc-print-answer-box i:last-child { border-bottom: none; }
+  .qc-print-p { font-size: 14px; line-height: 1.7; margin: 0; }
+  .qc-print-foot { margin-top: 26px; padding-top: 12px; border-top: 1px dashed #9bb6d6;
+    font-size: 12px; color: #5a7290; text-align: center; }
+}
 </style>
 <style>
 /* ============================================================
@@ -957,6 +1097,46 @@ function useLucide(dep) {
   });
 }
 
+/* ============================================================
+   外接摇杆 / 键盘 控制层
+   - 4 个语义动作：prev / next / confirm / cancel
+   - 各界面（待机屏、相机、识别面板…）按"层"注册自己的处理函数，
+     最顶层的活动界面优先响应（弹窗自然覆盖底层）。
+   - 同时支持两种对接方式：
+       方式一（键盘/摇杆发按键）：←→ = prev/next，↓或回车 = confirm，↑或Esc = cancel
+       方式二（页面提供 JS 接口）：window.QC.next()/prev()/confirm()/cancel()
+   ============================================================ */
+const __qcStack = [];
+function qcPush(layer) {
+  __qcStack.push(layer);
+  return () => {
+    const i = __qcStack.indexOf(layer);
+    if (i >= 0) __qcStack.splice(i, 1);
+  };
+}
+function qcFire(action) {
+  for (let i = __qcStack.length - 1; i >= 0; i--) {
+    const fn = __qcStack[i] && __qcStack[i][action];
+    if (typeof fn === "function") { fn(); return true; }
+  }
+  return false;
+}
+/* 当 active 为真时，把这一层的处理函数注册到栈顶；始终调用最新的回调。 */
+function useControlLayer(active, handlers) {
+  const ref = useRef(handlers);
+  ref.current = handlers;
+  useEffect(() => {
+    if (!active) return;
+    const layer = {
+      prev:    () => ref.current.prev    && ref.current.prev(),
+      next:    () => ref.current.next    && ref.current.next(),
+      confirm: () => ref.current.confirm && ref.current.confirm(),
+      cancel:  () => ref.current.cancel  && ref.current.cancel(),
+    };
+    return qcPush(layer);
+  }, [active]);
+}
+
 function Background() {
   return (
     <div className="qc-bg" aria-hidden="true">
@@ -1003,32 +1183,110 @@ Object.assign(window, { Icon, useLucide, Background, Header });
 
 function AskWindow({ value, onChange, onSubmit, focused, onFocus, onBlur, busy }) {
   const inputRef = useRef(null);
-  const fileRef = useRef(null);
+  const videoRef = useRef(null);
+  const streamRef = useRef(null);
   const [listening, setListening] = useState(false);
+  const [camOpen, setCamOpen] = useState(false);
+  const [recog, setRecog] = useState(null); // { source:"photo"|"voice", image, text }
   const [hint, setHint] = useState(null);
+  useLucide();
 
   function flash(msg) {
     setHint(msg);
     window.clearTimeout(flash._t);
-    flash._t = window.setTimeout(() => setHint(null), 2200);
+    flash._t = window.setTimeout(() => setHint(null), 2600);
   }
-  function toggleVoice(e) {
-    e.stopPropagation();
-    const next = !listening;
-    setListening(next);
-    flash(next ? "正在聆听…… 说出你的问题（演示）" : null);
-    if (next) window.setTimeout(() => setListening(false), 2600);
-  }
-  function pickPhoto(e) {
-    e.stopPropagation();
-    fileRef.current && fileRef.current.click();
-  }
-  function onFile(e) {
-    if (e.target.files && e.target.files[0]) {
-      flash("已接收照片：" + e.target.files[0].name + "（演示·识别中）");
-      e.target.value = "";
+  function stopStream() {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
     }
   }
+  // 卸载时确保关闭摄像头/麦克风
+  useEffect(() => stopStream, []);
+  // 摄像头画面就绪后挂到 video 上
+  useEffect(() => {
+    if (camOpen && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+      videoRef.current.play().catch(() => {});
+    }
+  }, [camOpen]);
+
+  async function openCamera(e) {
+    e && e.stopPropagation();
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      flash("此浏览器不支持调用摄像头，请使用 Chrome");
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment", width: { ideal: 1280 } },
+        audio: false,
+      });
+      streamRef.current = stream;
+      setCamOpen(true);
+    } catch (err) {
+      flash("无法打开摄像头：请检查摄像头连接与权限");
+    }
+  }
+  function closeCamera() { stopStream(); setCamOpen(false); }
+  function snap() {
+    const v = videoRef.current;
+    if (!v) return;
+    const w = v.videoWidth || 1280, h = v.videoHeight || 720;
+    const canvas = document.createElement("canvas");
+    canvas.width = w; canvas.height = h;
+    canvas.getContext("2d").drawImage(v, 0, 0, w, h);
+    const image = canvas.toDataURL("image/jpeg", 0.9);
+    closeCamera();
+    setRecog({ source: "photo", image, text: "" });
+  }
+
+  async function toggleVoice(e) {
+    e.stopPropagation();
+    if (listening) {
+      setListening(false); stopStream();
+      setRecog({ source: "voice", image: null, text: "" });
+      return;
+    }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      flash("此浏览器不支持调用麦克风，请使用 Chrome");
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+      setListening(true);
+      flash("正在聆听…… 再次点击话筒结束");
+    } catch (err) {
+      flash("无法打开麦克风：请检查麦克风连接与权限");
+    }
+  }
+
+  function confirmRecog() {
+    const t = (recog.text || "").trim();
+    if (!t) { flash("请先输入或确认识别到的文字"); return; }
+    setRecog(null);
+    onChange(t);
+    onSubmit(t);
+  }
+  function retryRecog() {
+    const s = recog.source;
+    setRecog(null);
+    if (s === "photo") openCamera();
+    else toggleVoice({ stopPropagation() {} });
+  }
+
+  /* 相机取景中：下拨=确认拍照，上拨=取消退出。 */
+  useControlLayer(camOpen, {
+    confirm: () => snap(),
+    cancel: () => closeCamera(),
+  });
+  /* 识别面板中：下拨=用这段文字去捕捉，上拨=丢弃。 */
+  useControlLayer(!!recog && !camOpen, {
+    confirm: () => confirmRecog(),
+    cancel: () => setRecog(null),
+  });
 
   return (
     <div className="qc-ask-wrap">
@@ -1060,11 +1318,9 @@ function AskWindow({ value, onChange, onSubmit, focused, onFocus, onBlur, busy }
           >
             <Icon name="mic" size={19} />
           </button>
-          <button className="qc-tool" title="拍照 / 上传图片提问" aria-label="拍照输入" onClick={pickPhoto}>
+          <button className="qc-tool" title="拍照提问" aria-label="拍照输入" onClick={openCamera}>
             <Icon name="camera" size={19} />
           </button>
-          <input ref={fileRef} type="file" accept="image/*" capture="environment"
-                 style={{ display: "none" }} onChange={onFile} />
         </div>
 
         <span className="qc-ask-sep"></span>
@@ -1083,6 +1339,61 @@ function AskWindow({ value, onChange, onSubmit, focused, onFocus, onBlur, busy }
         <div className="qc-input-hint">
           {listening && <span className="qc-listen-wave"><span></span><span></span><span></span><span></span><span></span></span>}
           <span>{hint || "正在聆听……"}</span>
+        </div>
+      )}
+
+      {/* 底部识别结果面板（拍照 / 语音录入后出现） */}
+      {recog && (
+        <div className="qc-recog glass">
+          <div className="qc-recog-head">
+            <span className="qc-recog-title">
+              <Icon name={recog.source === "photo" ? "scan-text" : "mic"} size={16} color="var(--fg-accent)" />
+              识别结果 · {recog.source === "photo" ? "拍照录入" : "语音录入"}
+            </span>
+            <button className="qc-recog-x" aria-label="关闭" onClick={() => setRecog(null)}>
+              <Icon name="x" size={16} />
+            </button>
+          </div>
+          <div className="qc-recog-body">
+            {recog.image && <img className="qc-recog-thumb" src={recog.image} alt="拍摄的照片" />}
+            <textarea
+              className="qc-recog-box"
+              rows={recog.image ? 4 : 3}
+              value={recog.text}
+              placeholder="识别引擎接入后，这里会自动填入识别到的文字；现在可以手动输入或修改……"
+              onChange={(e) => setRecog({ ...recog, text: e.target.value })}
+            />
+          </div>
+          <div className="qc-recog-foot">
+            <span className="qc-recog-note">
+              <Icon name="info" size={13} /> 文字识别（OCR / 语音转写）接入 AI 服务后自动完成
+            </span>
+            <div className="qc-recog-actions">
+              <button className="qc-recog-retry" onClick={retryRecog}>
+                <Icon name="rotate-ccw" size={15} /> 重新{recog.source === "photo" ? "拍照" : "录入"}
+              </button>
+              <button className="qc-recog-go" onClick={confirmRecog}>
+                用这个去捕捉 <Icon name="arrow-right" size={15} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 相机实时取景弹窗 */}
+      {camOpen && (
+        <div className="qc-cam-overlay" onClick={closeCamera}>
+          <div className="qc-cam-modal glass" onClick={(e) => e.stopPropagation()}>
+            <div className="qc-cam-stage">
+              <video ref={videoRef} className="qc-cam-video" autoPlay playsInline muted></video>
+              <div className="qc-cam-frame"></div>
+            </div>
+            <div className="qc-cam-actions">
+              <button className="qc-cam-cancel" onClick={closeCamera}><Icon name="x" size={18} /> 取消</button>
+              <button className="qc-cam-shot" onClick={snap} aria-label="拍照"><span></span></button>
+              <span className="qc-cam-tip">对准问题，点圆钮拍照</span>
+            </div>
+          </div>
         </div>
       )}
     </div>
@@ -1205,6 +1516,48 @@ function MindMap({ question, points }) {
   );
 }
 
+/* 把当前问题 + 思考脚手架渲染成一张白底纸面，调用浏览器打印（接 USB 打印机即可出纸）。 */
+function escHtml(s) {
+  return String(s).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+}
+function printSheet(question, data) {
+  const old = document.getElementById("qc-print-mount");
+  if (old) old.remove();
+  const now = new Date();
+  const dateStr = now.getFullYear() + "/" + (now.getMonth() + 1) + "/" + now.getDate();
+  const points = (data.points || [])
+    .map(([k, v]) => "<li><b>" + escHtml(k) + "</b><span>" + escHtml(v) + "</span></li>").join("");
+  const sources = (data.sources || []).map((s) => "<li>" + escHtml(s) + "</li>").join("");
+  const writeLines = '<div class="qc-print-write"><span></span><span></span></div>';
+  const follow = (data.followups || [])
+    .map((f) => "<li>" + escHtml(f) + writeLines + "</li>").join("");
+  const answerBox =
+    '<div class="qc-print-answer">' +
+      '<div class="qc-print-answer-t">【我的回答】 MY ANSWER</div>' +
+      '<div class="qc-print-answer-box">' +
+        '<i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>' +
+      "</div>" +
+    "</div>";
+  const mount = document.createElement("div");
+  mount.id = "qc-print-mount";
+  mount.innerHTML =
+    '<div class="qc-print-sheet">' +
+      '<div class="qc-print-head"><span class="qc-print-brand">格致 · 问题捕手 · GEZHI</span>' +
+        '<span class="qc-print-date">' + dateStr + "</span></div>" +
+      '<div class="qc-print-tag">' + escHtml(data.tag || "好问题") + "</div>" +
+      '<h1 class="qc-print-q">' + escHtml(question) + "</h1>" +
+      (points ? '<div class="qc-print-sec"><div class="qc-print-sec-t">思维导图 · 线索</div><ul class="qc-print-map">' + points + "</ul></div>" : "") +
+      (sources ? '<div class="qc-print-sec"><div class="qc-print-sec-t">相关文献</div><ul class="qc-print-list">' + sources + "</ul></div>" : "") +
+      (data.detail ? '<div class="qc-print-sec"><div class="qc-print-sec-t">思路提示</div><p class="qc-print-p">' + escHtml(data.detail) + "</p></div>" : "") +
+      (follow ? '<div class="qc-print-sec"><div class="qc-print-sec-t">引导追问 · 写下你的想法</div><ul class="qc-print-list qc-print-follow">' + follow + "</ul></div>" : "") +
+      answerBox +
+      '<div class="qc-print-foot">好问题，是答案的一半。—— 把它说清楚，就是你的答案。</div>' +
+    "</div>";
+  document.body.appendChild(mount);
+  window.print();
+  window.setTimeout(() => mount.remove(), 600);
+}
+
 function StructuredAnswer({ question, data, onPick }) {
   const guides = (data.followups || []).slice();
   return (
@@ -1253,6 +1606,13 @@ function StructuredAnswer({ question, data, onPick }) {
           ))}
         </div>
       </Block>
+
+      <div className="qc-print-row">
+        <button className="qc-print-btn" onClick={() => printSheet(question, data)}>
+          <Icon name="printer" size={17} color="currentColor" />
+          打印这个问题
+        </button>
+      </div>
     </div>
   );
 }
@@ -1395,58 +1755,149 @@ function FeatureBubble({ rec, onExplore }) {
   );
 }
 
+/* 2025 格初·问题捕手 · 十大好问题（真实评选结果） */
+const TOP10_2025 = [
+  { rank: 1, asker: "禇霏洋", grade: "初二4班", q: "基于AI绘画，写作等生成内容的爆发式增长，我们该为这些AI创作者建立一套什么样的规则来确认作品归属与责任认定，以保护作者的权益？" },
+  { rank: 1, asker: "王承睿 梁效辅", grade: "初一12班", q: "如果我们派一个机器人去月球建造“太阳能”发电站，你觉得应该把这个电站建在月球的什么地方，是永远面向地球的那一面，还是背对地球的那一面？" },
+  { rank: 2, asker: "沈灵", grade: "初二3班", q: "基于《人工智能与人类未来》中提到的关于机器人像奴隶一样被人类喜欢以及如果给予机器人一些权利又会给人类带来麻烦，为平衡好这一问题，人类到底该怎么做？" },
+  { rank: 3, asker: "赵文睿", grade: "初二3班", q: "干细胞治疗技术发展成熟后，我们应该制定怎样的规则？使其在医疗领域得到合理分配，在非医疗领域如美容，养老等得到合理运用？干细胞治疗技术的发展与推行，是否会对现有的医疗体系造成影响？" },
+  { rank: 3, asker: "丁大为 赖子浩 孙榕隽", grade: "初一9班", q: "基于人工智能与计算机技术，智能驾驶中的电子信号能否用量子代替？" },
+  { rank: 4, asker: "陶凌瑶，张泰睿，朱翼添", grade: "初一4班", q: "基于AI游戏化学习的理念，如何将学习过程嵌入游戏的反馈、剧情、组队机制，让学生更多的主动投入？" },
+  { rank: 4, asker: "于凌晟", grade: "初二3班", q: "美国军方于9-11后为提高军队素养，使用电子游戏训练士兵，治疗退伍军人，引导新兵入伍（如DARPA专为美军所研制的系列产品）这种方法是否有可行性？有何优势，有何劣势？可以改进亦或是完全不可行吗？如可行，是否能作为主要方法或只是辅助？理想模式是怎样的？总体来说，电子游戏是否真有能力影响现代军事训练？" },
+  { rank: 5, asker: "高圆", grade: "初二3班", q: "基于海基-岸基协同防御与“低慢小”目标反制原理，通过查找资料，提出：为打破信息壁垒提升处置效率，当面对沿海城市周边海域的无人机无人艇危险，航母防空反导体系该如何与城市近海安防系统联动？" },
+  { rank: 6, asker: "茅嘉怡", grade: "初一6班", q: "我们如何确保学生在未来“元宇宙”虚拟课堂和线上社交场景中的身份安全？" },
+  { rank: 7, asker: "王之裕 陆闻", grade: "初一12班", q: "基于现代火药枪支后座力较大，从而导致精准度下降，为了减少战争伤亡，经济缺失，我们怎么才能改变单兵武器的精准度？" },
+];
+
 function Standby({ onPick, onEnter }) {
   useLucide();
-  const recs = useMemo(() => GOOD_QUESTIONS.map((r, i) => ({ ...r, id: i })), []);
-  const lanes = useMemo(() => {
-    const cfg = [
-      { top: 6,  depth: 2, dur: 62, dir: "left" },
-      { top: 17, depth: 1, dur: 84, dir: "right" },
-      { top: 28, depth: 0, dur: 104, dir: "left" },
-      { top: 49, depth: 0, dur: 96, dir: "right" },
-      { top: 62, depth: 2, dur: 68, dir: "left" },
-      { top: 73, depth: 1, dur: 88, dir: "right" },
-    ];
-    return cfg.map((c, li) => {
-      const rot = recs.slice(li).concat(recs.slice(0, li));
-      const items = li % 2 ? rot.slice().reverse() : rot;
-      return { ...c, items };
-    });
-  }, [recs]);
 
-  const [fi, setFi] = useState(0);
-  const [paused, setPaused] = useState(false);
-  useEffect(() => {
-    if (paused) return;
-    const t = setInterval(() => setFi((n) => (n + 1) % recs.length), 8000);
-    return () => clearInterval(t);
-  }, [paused, recs.length]);
+  /* 把 10 个真实好问题复制成两圈（共 20 个槽位），让顶端圆弧始终铺满、首尾相接、且不会同时出现重复。 */
+  const items = useMemo(() => {
+    const frac = (x) => { const v = Math.sin(x) * 43758.5453; return v - Math.floor(v); };
+    const base = TOP10_2025.concat(TOP10_2025);
+    return base.map((it, i) => ({
+      ...it,
+      idx: i,
+      rand: 0.90 + frac((i + 1) * 12.9898) * 0.18,
+      phase: frac((i + 1) * 78.233) * Math.PI * 2,
+      freq: 0.5 + frac((i + 1) * 3.17) * 0.5,
+      floatAmp: 4 + frac((i + 1) * 9.13) * 5,
+    }));
+  }, []);
+  const N = items.length;
+  const SPACING = 360 / N;
+  const AUTO_DEG_PER_SEC = 2.2;       // 放慢的顺时针自转
 
-  const featured = recs[fi];
-  function focusRec(rec) {
-    setFi(rec.id);
-    setPaused(true);
-    clearTimeout(focusRec._t);
-    focusRec._t = setTimeout(() => setPaused(false), 16000);
+  const stageRef = useRef(null);
+  const cursorRef = useRef(null);
+  const elRefs = useRef([]);
+  const rotRef = useRef(0);
+  const targetRef = useRef(0);
+  const pausedRef = useRef(false);
+  const resumeRef = useRef(null);
+  const activeRef = useRef(0);
+  const [activeIdx, setActiveIdx] = useState(0);
+
+  function pauseAuto() {
+    pausedRef.current = true;
+    clearTimeout(resumeRef.current);
+    resumeRef.current = setTimeout(() => { pausedRef.current = false; }, 14000);
   }
+  function step(d) { targetRef.current += d * SPACING; pauseAuto(); }
+
+  useControlLayer(true, {
+    prev: () => step(-1),
+    next: () => step(1),
+    confirm: () => { const it = items[activeRef.current]; if (it) onPick(it.q); },
+  });
+
+  /* 自定义"取景准星"光标跟随鼠标 */
+  useEffect(() => {
+    function mv(e) {
+      const c = cursorRef.current;
+      if (c) { c.style.opacity = "1"; c.style.transform = "translate(" + e.clientX + "px," + e.clientY + "px)"; }
+    }
+    window.addEventListener("mousemove", mv);
+    return () => window.removeEventListener("mousemove", mv);
+  }, []);
+
+  useEffect(() => {
+    let raf, last = performance.now();
+    function frame(now) {
+      const dt = Math.min(0.05, (now - last) / 1000); last = now;
+      if (!pausedRef.current) targetRef.current += AUTO_DEG_PER_SEC * dt;
+      rotRef.current += (targetRef.current - rotRef.current) * Math.min(1, dt * 6);
+
+      const stage = stageRef.current;
+      if (!stage) { raf = requestAnimationFrame(frame); return; }
+      const W = stage.clientWidth, H = stage.clientHeight;
+      const R = Math.max(560, W * 0.62);
+      const cx = W / 2;
+      const cy = H * 0.32 + R;
+      const t = now / 1000;
+
+      let bestI = 0, bestAbs = 1e9;
+      for (let i = 0; i < N; i++) {
+        const el = elRefs.current[i];
+        if (!el) continue;
+        let aDeg = items[i].idx * SPACING + rotRef.current;
+        aDeg = ((aDeg + 180) % 360 + 360) % 360 - 180;
+        const aAbs = Math.abs(aDeg);
+        if (aAbs < bestAbs) { bestAbs = aAbs; bestI = i; }
+        if (aAbs > 64) {
+          el.style.opacity = "0";
+          el.style.pointerEvents = "none";
+          el.style.transform = "translate(-9999px,-9999px)";
+          continue;
+        }
+        const a = aDeg * Math.PI / 180;
+        const x = cx + R * Math.sin(a);
+        let y = cy - R * Math.cos(a);
+        y += Math.sin(t * items[i].freq * 2 + items[i].phase) * items[i].floatAmp;
+        const cosA = Math.cos(a);
+        const isActive = i === activeRef.current;
+        const scale = (0.62 + 0.42 * cosA) * items[i].rand * (isActive ? 1.12 : 1);
+        const opacity = Math.max(0, Math.min(1, (64 - aAbs) / 20));
+        el.style.opacity = String(isActive ? 1 : opacity * 0.82);
+        el.style.pointerEvents = "auto";
+        el.style.zIndex = String(Math.round(cosA * 100) + (isActive ? 300 : 0));
+        /* 始终保持垂直：只做平移 + 缩放，不做旋转 */
+        el.style.transform =
+          "translate(" + x.toFixed(1) + "px," + y.toFixed(1) + "px) translate(-50%,-50%) scale(" + scale.toFixed(3) + ")";
+      }
+      if (bestI !== activeRef.current) { activeRef.current = bestI; setActiveIdx(bestI); }
+      raf = requestAnimationFrame(frame);
+    }
+    raf = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(raf);
+  }, [N]);
 
   return (
-    <div className="qc-standby">
-      <div className="qc-field" aria-hidden="false">
-        {lanes.map((ln, i) => (
-          <Lane key={i} recs={ln.items} depth={ln.depth} top={ln.top} dur={ln.dur} dir={ln.dir} onPick={focusRec} activeId={featured.id} />
+    <div className="qc-standby qc-standby-ring">
+      <div className="qc-ring-stage" ref={stageRef}>
+        {items.map((it, i) => (
+          <button
+            key={i}
+            ref={(el) => (elRefs.current[i] = el)}
+            className={"qc-ring-q" + (i === activeIdx ? " is-active" : "")}
+            onClick={() => onPick(it.q)}
+            title={it.q}
+          >
+            <span className="qc-ring-frame" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+            <span className="qc-ring-text">{it.q}</span>
+            <span className="qc-ring-meta">{it.asker} · {it.grade} · TOP {it.rank}</span>
+          </button>
         ))}
       </div>
-      <div className="qc-field-veil"></div>
+      <div className="qc-ring-veil"></div>
 
-      <div className="qc-feature-wrap">
-        <FeatureBubble key={featured.id} rec={featured} onExplore={onPick} />
-        <div className="qc-feat-dots">
-          {recs.map((r) => (
-            <button key={r.id} className={"qc-feat-dot" + (r.id === featured.id ? " is-on" : "")}
-              onClick={() => focusRec(r)} aria-label={"好问题 " + (r.id + 1)}></button>
-          ))}
-        </div>
+      <div className="qc-cursor" ref={cursorRef} aria-hidden="true">
+        <svg viewBox="0 0 42 42" fill="none" stroke="#7DD8FB" stroke-width="2.4" stroke-linecap="round">
+          <path d="M5 14 V5 H14" /><path d="M28 5 H37 V14" />
+          <path d="M37 28 V37 H28" /><path d="M14 37 H5 V28" />
+          <circle cx="21" cy="21" r="1.6" fill="#7DD8FB" stroke="none" />
+        </svg>
       </div>
 
       <div className="qc-standby-foot">
@@ -1455,7 +1906,7 @@ function Standby({ onPick, onEnter }) {
           <span className="label-mono">格致 · 问题捕手 · 2025 十大好问题</span>
         </span>
         <h1 className="qc-standby-title">你想<span className="qc-accent">捕捉</span>哪个问题？</h1>
-        <p className="qc-standby-tagline">轻触任意漂浮的问题，看见它的思考脚手架——或自己提一个。</p>
+        <p className="qc-standby-tagline">← → 选择 · ↓ 展开探究 · ↑ 取消，或轻触任意问题、自己提一个。</p>
         <button className="qc-enter-btn" onClick={onEnter}>
           <Icon name="pen-line" size={18} color="currentColor" />我要自己提问
         </button>
@@ -1507,6 +1958,40 @@ function App() {
   function enterApp() { setMode("app"); reset(); }
   function toStandby() { setMode("standby"); setQuery(null); setBusy(false); setDraft(""); }
 
+  /* 摇杆 / 键盘 → 语义动作分发；并对外暴露 window.QC 供硬件回调（方式二）。 */
+  useEffect(() => {
+    function onKey(e) {
+      const tag = (e.target && e.target.tagName) || "";
+      const typing = tag === "INPUT" || tag === "TEXTAREA";
+      let act = null;
+      if (e.key === "ArrowLeft") act = "prev";
+      else if (e.key === "ArrowRight") act = "next";
+      else if (e.key === "ArrowDown" || e.key === "Enter") act = "confirm";
+      else if (e.key === "ArrowUp" || e.key === "Escape") act = "cancel";
+      if (!act) return;
+      if (typing) {
+        // 文本框内：方向键移动光标、回车交给输入框；仅接管 Esc=取消
+        if (e.key === "Escape" && qcFire("cancel")) e.preventDefault();
+        return;
+      }
+      if (qcFire(act)) e.preventDefault();
+    }
+    window.addEventListener("keydown", onKey);
+    window.QC = {
+      prev: () => qcFire("prev"),
+      next: () => qcFire("next"),
+      confirm: () => qcFire("confirm"),
+      cancel: () => qcFire("cancel"),
+    };
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  /* App 内的底层控制：下拨=提交当前问题（无答案时），上拨=返回待机屏。 */
+  useControlLayer(mode === "app", {
+    confirm: () => { if (!query && draft.trim()) submit(); },
+    cancel: () => toStandby(),
+  });
+
   /* Kiosk idle → return to the standby screensaver after inactivity. */
   const idle = useRef(null);
   useEffect(() => {
@@ -1550,7 +2035,7 @@ function App() {
             <AskWindow
               value={draft}
               onChange={setDraft}
-              onSubmit={() => submit()}
+              onSubmit={(q) => submit(q)}
               focused={focused}
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
